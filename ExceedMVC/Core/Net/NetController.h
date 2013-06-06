@@ -14,6 +14,12 @@
 
 @property (nonatomic, assign) id <NetControllerDelegate> delegate;
 
+// 下载指定url的文件
+- (void)downloadFile:(NSString *)filePath withUrl:(NSString *)url;
+
+// 获取指定用户资料
+- (void)getUserInfoOf:(UInt64)userID;
+
 @end
 
 
@@ -21,6 +27,18 @@
 @protocol NetControllerDelegate <NSObject>
 
 @optional
+
+// 网络原因用户资料获取失败
+- (void)netController:(NetController *)netController userInfoError:(NSError *)error of:(UInt64)userID;
+
+// 网络原因用户资料获取失败
+- (void)netController:(NetController *)netController userInfoSuccess:(NSString *)strWebData of:(UInt64)userID;
+
+// 网络原因下载失败
+- (void)netController:(NetController *)netController downloadFileError:(NSError *)error with:(NSString *)filePath andUrl:(NSString *)url;
+
+// 下载成功
+- (void)netController:(NetController *)netController downloadFileSuccessWith:(NSString *)filePath andUrl:(NSString *)url;
 
 @end
 

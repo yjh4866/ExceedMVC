@@ -15,11 +15,14 @@
 #define LOCALNET
 //#undef LOCALNET
 
-#define HOST_Interface     @"http://dp.sina.cn/interface/f/blog/"
+#define HOST_Interface     @"http://192.168.1.110"
+
+#define UserInfoUrl     @"http://www.baidu.com?uid=%lld"
 
 
 typedef NS_ENUM(NSUInteger, NetRequestType) {
-    NetRequestType_None, 
+    NetRequestType_None,
+    NetRequestType_UserInfo,
 };
 
 @interface NetController () <HTTPConnectionDelegate, DLConnectionDelegate> {
@@ -57,6 +60,22 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
 
 #pragma mark - Public
 
+// 下载指定url的文件
+- (void)downloadFile:(NSString *)filePath withUrl:(NSString *)url
+{
+    [_downloadConnection downloadFile:filePath from:url];
+}
+
+// 获取指定用户资料
+- (void)getUserInfoOf:(UInt64)userID
+{
+    NSString *url = [NSString stringWithFormat:UserInfoUrl, userID];
+    NSDictionary *dicParam = @{@"type": [NSNumber numberWithInt:NetRequestType_UserInfo],
+                               @"userid": [NSNumber numberWithLongLong:userID]};
+    [_httpConnection requestWebDataWithURL:url andParam:dicParam
+                                     cache:YES priority:YES];
+}
+
 
 #pragma mark - HTTPConnectionDelegate
 
@@ -67,6 +86,15 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
     NetRequestType requestType = [[dicParam objectForKey:@"type"] intValue];
     //
     switch (requestType) {
+            //用户资料
+        case NetRequestType_UserInfo:
+        {
+            if ([self.delegate respondsToSelector:@selector(netController:userInfoError:of:)]) {
+                UInt64 userID = [[dicParam objectForKey:@"userid"] longLongValue];
+                [self.delegate netController:self userInfoError:error of:userID];
+            }
+        }
+            break;
         default:
             break;
     }
@@ -104,6 +132,17 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
     NetRequestType requestType = [[dicParam objectForKey:@"type"] intValue];
     //
     switch (requestType) {
+            //用户资料
+        case NetRequestType_UserInfo:
+        {
+            if ([self.delegate respondsToSelector:@selector(netController:userInfoSuccess:of:)]) {
+                NSString *strWebData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                UInt64 userID = [[dicParam objectForKey:@"userid"] longLongValue];
+                [self.delegate netController:self userInfoSuccess:strWebData of:userID];
+                [strWebData release];
+            }
+        }
+            break;
         default:
             break;
     }
@@ -116,6 +155,9 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
 - (void)dlConnection:(DLConnection *)dlConnection downloadFailure:(NSError *)error
             withPath:(NSString *)filePath andUrl:(NSString *)url
 {
+    if ([self.delegate respondsToSelector:@selector(netController:downloadFileError:with:andUrl:)]) {
+        [self.delegate netController:self downloadFileError:error with:filePath andUrl:url];
+    }
 }
 
 // 得到文件实际大小
@@ -134,6 +176,9 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
 - (void)dlConnection:(DLConnection *)dlConnection finishedWithPath:(NSString *)filePath
               andUrl:(NSString *)url
 {
+    if ([self.delegate respondsToSelector:@selector(netController:downloadFileSuccessWith:andUrl:)]) {
+        [self.delegate netController:self downloadFileSuccessWith:filePath andUrl:url];
+    }
 }
 
 @end

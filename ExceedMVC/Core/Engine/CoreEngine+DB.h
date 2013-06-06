@@ -10,4 +10,10 @@
 
 @interface CoreEngine (DB)
 
+// 从数据库读取会话列表
+- (void)loadChats:(NSMutableArray *)marrChat;
+
+// 查询姓名
+- (NSString *)getUserNameOf:(UInt64)userID;
+
 @end

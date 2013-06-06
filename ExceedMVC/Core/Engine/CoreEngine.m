@@ -66,3 +66,9 @@
 
 #pragma mark - Notification
 
+NSString *const NetUserInfoFailure           = @"NetUserInfoFailure";
+NSString *const NetUserInfoSuccess           = @"NetUserInfoSuccess";
+
+NSString *const NetDownloadFileFailure       = @"NetDownloadFileFailure";
+NSString *const NetDownloadFileSuccess       = @"NetDownloadFileSuccess";
+

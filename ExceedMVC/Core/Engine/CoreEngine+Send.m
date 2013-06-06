@@ -7,7 +7,21 @@
 //
 
 #import "CoreEngine+Send.h"
+#import "FileManager+Picture.h"
 
 @implementation CoreEngine (Send)
+
+// 下载指定url的图片
+- (void)downloadPictureWithUrl:(NSString *)picUrl
+{
+    NSString *filePath = [FileManager picturePathOfUrl:picUrl];
+    [_netController downloadFile:filePath withUrl:picUrl];
+}
+
+// 获取指定用户资料
+- (void)getUserInfoOf:(UInt64)userID
+{
+    [_netController getUserInfoOf:userID];
+}
 
 @end

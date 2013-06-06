@@ -52,6 +52,19 @@
 		B115E3E91760C07800F31423 /* UIView+Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3E81760C07800F31423 /* UIView+Badge.m */; };
 		B115E3EC1760C07800F31423 /* UIView+MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3EB1760C07800F31423 /* UIView+MBProgressHUD.m */; };
 		B115E3EF1760C07800F31423 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3EE1760C07800F31423 /* RootViewController.m */; };
+		B115E3F71760C08500F31423 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B115E3F61760C08500F31423 /* libsqlite3.0.dylib */; };
+		B115E3FC1760C14300F31423 /* MainVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3FB1760C14300F31423 /* MainVC.m */; };
+		B115E3FF1760C2FC00F31423 /* ChatsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3FE1760C2FC00F31423 /* ChatsVC.m */; };
+		B115E4021760C30900F31423 /* ChatVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E4011760C30900F31423 /* ChatVC.m */; };
+		B115E4051760C32F00F31423 /* ContactsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E4041760C32F00F31423 /* ContactsVC.m */; };
+		B115E4081760C33A00F31423 /* MoreVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E4071760C33A00F31423 /* MoreVC.m */; };
+		B115E40B1760C34400F31423 /* LoginVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E40A1760C34400F31423 /* LoginVC.m */; };
+		B115E40E1760C3AF00F31423 /* ContactInfoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E40D1760C3AF00F31423 /* ContactInfoVC.m */; };
+		B115E4141760CF6B00F31423 /* ChatsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E4131760CF6B00F31423 /* ChatsItem.m */; };
+		B17002541760DD830095211C /* DBController+Message.m in Sources */ = {isa = PBXBuildFile; fileRef = B17002531760DD830095211C /* DBController+Message.m */; };
+		B17002571760DD990095211C /* FileManager+Picture.m in Sources */ = {isa = PBXBuildFile; fileRef = B17002561760DD990095211C /* FileManager+Picture.m */; };
+		B170025A1760E3F70095211C /* DBController+UserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B17002591760E3F70095211C /* DBController+UserInfo.m */; };
+		B170025D1760EC600095211C /* UserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B170025C1760EC600095211C /* UserInfo.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -138,6 +151,31 @@
 		B115E3ED1760C07800F31423 /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RootViewController.h; path = UI/RootViewController.h; sourceTree = "<group>"; };
 		B115E3EE1760C07800F31423 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RootViewController.m; path = UI/RootViewController.m; sourceTree = "<group>"; };
 		B115E3F01760C07800F31423 /* UIMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIMacro.h; path = UI/UIMacro.h; sourceTree = "<group>"; };
+		B115E3F61760C08500F31423 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		B115E3FA1760C14300F31423 /* MainVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainVC.h; sourceTree = "<group>"; };
+		B115E3FB1760C14300F31423 /* MainVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainVC.m; sourceTree = "<group>"; };
+		B115E3FD1760C2FC00F31423 /* ChatsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsVC.h; sourceTree = "<group>"; };
+		B115E3FE1760C2FC00F31423 /* ChatsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsVC.m; sourceTree = "<group>"; };
+		B115E4001760C30900F31423 /* ChatVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatVC.h; sourceTree = "<group>"; };
+		B115E4011760C30900F31423 /* ChatVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatVC.m; sourceTree = "<group>"; };
+		B115E4031760C32F00F31423 /* ContactsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsVC.h; sourceTree = "<group>"; };
+		B115E4041760C32F00F31423 /* ContactsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsVC.m; sourceTree = "<group>"; };
+		B115E4061760C33A00F31423 /* MoreVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreVC.h; sourceTree = "<group>"; };
+		B115E4071760C33A00F31423 /* MoreVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreVC.m; sourceTree = "<group>"; };
+		B115E4091760C34400F31423 /* LoginVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginVC.h; sourceTree = "<group>"; };
+		B115E40A1760C34400F31423 /* LoginVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginVC.m; sourceTree = "<group>"; };
+		B115E40C1760C3AF00F31423 /* ContactInfoVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactInfoVC.h; sourceTree = "<group>"; };
+		B115E40D1760C3AF00F31423 /* ContactInfoVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactInfoVC.m; sourceTree = "<group>"; };
+		B115E4121760CF6B00F31423 /* ChatsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsItem.h; sourceTree = "<group>"; };
+		B115E4131760CF6B00F31423 /* ChatsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsItem.m; sourceTree = "<group>"; };
+		B17002521760DD830095211C /* DBController+Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "DBController+Message.h"; path = "Core/DB/DBController+Message.h"; sourceTree = "<group>"; };
+		B17002531760DD830095211C /* DBController+Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "DBController+Message.m"; path = "Core/DB/DBController+Message.m"; sourceTree = "<group>"; };
+		B17002551760DD990095211C /* FileManager+Picture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FileManager+Picture.h"; path = "Core/FileManager/FileManager+Picture.h"; sourceTree = "<group>"; };
+		B17002561760DD990095211C /* FileManager+Picture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "FileManager+Picture.m"; path = "Core/FileManager/FileManager+Picture.m"; sourceTree = "<group>"; };
+		B17002581760E3F70095211C /* DBController+UserInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "DBController+UserInfo.h"; path = "Core/DB/DBController+UserInfo.h"; sourceTree = "<group>"; };
+		B17002591760E3F70095211C /* DBController+UserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "DBController+UserInfo.m"; path = "Core/DB/DBController+UserInfo.m"; sourceTree = "<group>"; };
+		B170025B1760EC600095211C /* UserInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfo.h; sourceTree = "<group>"; };
+		B170025C1760EC600095211C /* UserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfo.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +183,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B115E3F71760C08500F31423 /* libsqlite3.0.dylib in Frameworks */,
 				B115E3641760C07700F31423 /* UIKit.framework in Frameworks */,
 				B115E3661760C07700F31423 /* Foundation.framework in Frameworks */,
 				B115E3681760C07700F31423 /* CoreGraphics.framework in Frameworks */,
@@ -183,6 +222,7 @@
 				B115E3691760C07700F31423 /* AddressBook.framework */,
 				B115E36B1760C07700F31423 /* SystemConfiguration.framework */,
 				B115E36D1760C07700F31423 /* QuartzCore.framework */,
+				B115E3F61760C08500F31423 /* libsqlite3.0.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -190,10 +230,10 @@
 		B115E36F1760C07700F31423 /* ExceedMVC */ = {
 			isa = PBXGroup;
 			children = (
-				B115E3781760C07700F31423 /* AppDelegate.h */,
-				B115E3791760C07700F31423 /* AppDelegate.m */,
 				B115E3831760C07700F31423 /* Core */,
 				B115E3D41760C07800F31423 /* UI */,
+				B115E3781760C07700F31423 /* AppDelegate.h */,
+				B115E3791760C07700F31423 /* AppDelegate.m */,
 				B115E3701760C07700F31423 /* Supporting Files */,
 			);
 			path = ExceedMVC;
@@ -217,9 +257,10 @@
 		B115E3831760C07700F31423 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				B115E3841760C07700F31423 /* AppSetting */,
-				B115E38B1760C07700F31423 /* DB */,
 				B115E39C1760C07700F31423 /* Engine */,
+				B115E3841760C07700F31423 /* AppSetting */,
+				B115E3F81760C0B400F31423 /* DataItem */,
+				B115E38B1760C07700F31423 /* DB */,
 				B115E3AC1760C07700F31423 /* Net */,
 				B115E3B71760C07700F31423 /* FileManager */,
 				B115E3BB1760C07700F31423 /* Other */,
@@ -241,13 +282,17 @@
 		B115E38B1760C07700F31423 /* DB */ = {
 			isa = PBXGroup;
 			children = (
+				B115E3951760C07700F31423 /* DBBase */,
 				B115E38C1760C07700F31423 /* DBController.h */,
 				B115E38D1760C07700F31423 /* DBController.m */,
 				B115E38F1760C07700F31423 /* DBController+Update.h */,
 				B115E3901760C07700F31423 /* DBController+Update.m */,
 				B115E3921760C07700F31423 /* DBController+Version.h */,
 				B115E3931760C07700F31423 /* DBController+Version.m */,
-				B115E3951760C07700F31423 /* DBBase */,
+				B17002521760DD830095211C /* DBController+Message.h */,
+				B17002531760DD830095211C /* DBController+Message.m */,
+				B17002581760E3F70095211C /* DBController+UserInfo.h */,
+				B17002591760E3F70095211C /* DBController+UserInfo.m */,
 			);
 			name = DB;
 			sourceTree = "<group>";
@@ -283,9 +328,9 @@
 		B115E3AC1760C07700F31423 /* Net */ = {
 			isa = PBXGroup;
 			children = (
+				B115E3AD1760C07700F31423 /* NetBase */,
 				B115E3B41760C07700F31423 /* NetController.h */,
 				B115E3B51760C07700F31423 /* NetController.m */,
-				B115E3AD1760C07700F31423 /* NetBase */,
 			);
 			name = Net;
 			sourceTree = "<group>";
@@ -306,6 +351,8 @@
 			children = (
 				B115E3B81760C07700F31423 /* FileManager.h */,
 				B115E3B91760C07700F31423 /* FileManager.m */,
+				B17002551760DD990095211C /* FileManager+Picture.h */,
+				B17002561760DD990095211C /* FileManager+Picture.m */,
 			);
 			name = FileManager;
 			sourceTree = "<group>";
@@ -336,11 +383,12 @@
 		B115E3D41760C07800F31423 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				B115E3D51760C07800F31423 /* Engine */,
+				B115E3F91760C0C300F31423 /* VCs */,
+				B115E3D91760C07800F31423 /* OtherViews */,
 				B115E3ED1760C07800F31423 /* RootViewController.h */,
 				B115E3EE1760C07800F31423 /* RootViewController.m */,
 				B115E3F01760C07800F31423 /* UIMacro.h */,
-				B115E3D51760C07800F31423 /* Engine */,
-				B115E3D91760C07800F31423 /* OtherViews */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -372,6 +420,40 @@
 				B115E3EB1760C07800F31423 /* UIView+MBProgressHUD.m */,
 			);
 			name = OtherViews;
+			sourceTree = "<group>";
+		};
+		B115E3F81760C0B400F31423 /* DataItem */ = {
+			isa = PBXGroup;
+			children = (
+				B115E4121760CF6B00F31423 /* ChatsItem.h */,
+				B115E4131760CF6B00F31423 /* ChatsItem.m */,
+				B170025B1760EC600095211C /* UserInfo.h */,
+				B170025C1760EC600095211C /* UserInfo.m */,
+			);
+			name = DataItem;
+			path = Core/DataItem;
+			sourceTree = "<group>";
+		};
+		B115E3F91760C0C300F31423 /* VCs */ = {
+			isa = PBXGroup;
+			children = (
+				B115E3FA1760C14300F31423 /* MainVC.h */,
+				B115E3FB1760C14300F31423 /* MainVC.m */,
+				B115E3FD1760C2FC00F31423 /* ChatsVC.h */,
+				B115E3FE1760C2FC00F31423 /* ChatsVC.m */,
+				B115E4001760C30900F31423 /* ChatVC.h */,
+				B115E4011760C30900F31423 /* ChatVC.m */,
+				B115E4031760C32F00F31423 /* ContactsVC.h */,
+				B115E4041760C32F00F31423 /* ContactsVC.m */,
+				B115E4061760C33A00F31423 /* MoreVC.h */,
+				B115E4071760C33A00F31423 /* MoreVC.m */,
+				B115E4091760C34400F31423 /* LoginVC.h */,
+				B115E40A1760C34400F31423 /* LoginVC.m */,
+				B115E40C1760C3AF00F31423 /* ContactInfoVC.h */,
+				B115E40D1760C3AF00F31423 /* ContactInfoVC.m */,
+			);
+			name = VCs;
+			path = UI/VCs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -474,6 +556,18 @@
 				B115E3E91760C07800F31423 /* UIView+Badge.m in Sources */,
 				B115E3EC1760C07800F31423 /* UIView+MBProgressHUD.m in Sources */,
 				B115E3EF1760C07800F31423 /* RootViewController.m in Sources */,
+				B115E3FC1760C14300F31423 /* MainVC.m in Sources */,
+				B115E3FF1760C2FC00F31423 /* ChatsVC.m in Sources */,
+				B115E4021760C30900F31423 /* ChatVC.m in Sources */,
+				B115E4051760C32F00F31423 /* ContactsVC.m in Sources */,
+				B115E4081760C33A00F31423 /* MoreVC.m in Sources */,
+				B115E40B1760C34400F31423 /* LoginVC.m in Sources */,
+				B115E40E1760C3AF00F31423 /* ContactInfoVC.m in Sources */,
+				B115E4141760CF6B00F31423 /* ChatsItem.m in Sources */,
+				B17002541760DD830095211C /* DBController+Message.m in Sources */,
+				B17002571760DD990095211C /* FileManager+Picture.m in Sources */,
+				B170025A1760E3F70095211C /* DBController+UserInfo.m in Sources */,
+				B170025D1760EC600095211C /* UserInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +680,7 @@
 				B115E3F51760C07800F31423 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

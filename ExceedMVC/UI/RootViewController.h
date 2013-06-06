@@ -21,7 +21,7 @@
 
 @optional
 
-// 第一次显示
+// 是否为第一次显示
 - (void)rootVC:(RootViewController *)rootVC didFirstAppear:(BOOL)firstAppear;
 
 @end

@@ -8,6 +8,11 @@
 
 #import "UIEngine.h"
 #import "UIDevice+Custom.h"
+#import "CoreEngine+DB.h"
+#import "CoreEngine+Send.h"
+#import "AppDelegate.h"
+#import "FileManager.h"
+#import "FileManager+Picture.h"
 
 @interface UIEngine () {
     
@@ -44,22 +49,154 @@
 }
 
 
-#pragma mark -
-#pragma mark RootVCDelegate
+#pragma mark - RootVCDelegate
 
-//根页面显示
-- (void)rootViewController:(RootViewController *)rootVC didFirstAppear:(BOOL)first
+// 是否为第一次显示
+- (void)rootVC:(RootViewController *)rootVC didFirstAppear:(BOOL)firstAppear
 {
-    if (first) {
-        UIViewController *firstVC = [[UIViewController alloc] init];
+    if (firstAppear) {
+        MainVC *mainVC = [[MainVC alloc] init];
+        mainVC.dataSource = self;
         if ([UIDevice systemVersionID] < __IPHONE_5_0) {
-            [_rootViewController presentModalViewController:firstVC animated:NO];
+            [_rootViewController presentModalViewController:mainVC animated:NO];
         }
         else {
-            [_rootViewController presentViewController:firstVC animated:NO completion:nil];
+            [_rootViewController presentViewController:mainVC animated:NO completion:nil];
         }
-        [firstVC release];
+        [mainVC release];
     }
+}
+
+
+#pragma mark - MainVCDataSource
+
+// 加载Tab页面
+- (void)mainVC:(MainVC *)mainVC loadViewControllers:(NSMutableArray *)marray
+{
+    //会话
+    ChatsVC *chatsVC = [[ChatsVC alloc] init];
+    chatsVC.dataSource = self;
+    chatsVC.delegate = self;
+    UINavigationController *navChats = [[UINavigationController alloc] initWithRootViewController:chatsVC];
+    UITabBarItem *tabItemChats = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemBookmarks tag:0];
+    navChats.tabBarItem = tabItemChats;
+    [tabItemChats release];
+    [marray addObject:navChats];
+    [navChats release];
+    [chatsVC release];
+    //联系人
+    ContactsVC *contactsVC = [[ContactsVC alloc] init];
+    contactsVC.dataSource = self;
+    contactsVC.delegate = self;
+    UINavigationController *navContacts = [[UINavigationController alloc] initWithRootViewController:contactsVC];
+    UITabBarItem *tabItemContacts = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemContacts tag:1];
+    navContacts.tabBarItem = tabItemContacts;
+    [tabItemContacts release];
+    [marray addObject:navContacts];
+    [navContacts release];
+    [contactsVC release];
+    //更多
+    MoreVC *moreVC = [[MoreVC alloc] init];
+    moreVC.dataSource = self;
+    moreVC.delegate = self;
+    UINavigationController *navMore = [[UINavigationController alloc] initWithRootViewController:moreVC];
+    UITabBarItem *tabItemMore = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemMore tag:2];
+    navMore.tabBarItem = tabItemMore;
+    [tabItemMore release];
+    [marray addObject:navMore];
+    [navMore release];
+    [moreVC release];
+}
+
+
+#pragma mark - ChatsVCDataSource
+
+// 加载会话列表
+- (void)chatsVC:(ChatsVC *)chatsVC loadChats:(NSMutableArray *)marrChat
+{
+    [self.engineCore loadChats:marrChat];
+}
+
+// 加载指定url的图片
+- (UIImage *)chatsVC:(ChatsVC *)chatsVC pictureWithUrl:(NSString *)url
+{
+    return [FileManager pictureOfUrl:url];
+}
+
+
+#pragma mark - ChatsVCDelegate
+
+// 下载指定url的头像
+- (void)chatsVC:(ChatsVC *)chatsVC downloadAvatarWithUrl:(NSString *)url
+{
+    [self.engineCore downloadPictureWithUrl:url];
+}
+
+// 进入聊天页面
+- (void)chatsVC:(ChatsVC *)chatsVC chatWithFriend:(UInt64)friendID
+{
+    ChatVC *chatVC = [[ChatVC alloc] init];
+    chatVC.friendID = friendID;
+    chatVC.dataSource = self;
+    chatVC.delegate = self;
+    [chatsVC.navigationController pushViewController:chatVC animated:YES];
+    [chatVC release];
+}
+
+
+#pragma mark - ChatVCDataSource
+
+// 查询姓名
+- (NSString *)chatVC:(ChatVC *)chatVC getUserNameOf:(UInt64)userID
+{
+    return [self.engineCore getUserNameOf:userID];
+}
+
+
+#pragma mark - ChatVCDelegate
+
+// 进入用户详细资料页面
+- (void)chatVCShowUserInfo:(ChatVC *)chatVC
+{
+    ContactInfoVC *contactInfoVC = [[ContactInfoVC alloc] init];
+    contactInfoVC.userID = chatVC.friendID;
+    contactInfoVC.dataSource = self;
+    contactInfoVC.delegate = self;
+    [chatVC.navigationController pushViewController:contactInfoVC animated:YES];
+    [contactInfoVC release];
+}
+
+
+#pragma mark - ContactInfoVCDataSource
+
+// 加载已有资料
+- (void)contactInfoVC:(ContactInfoVC *)contactInfoVC
+         loadUserInfo:(UserInfo *)userInfo
+{
+    //加载已有资料
+}
+
+// 加载指定url的头像
+- (UIImage *)contactInfoVC:(ContactInfoVC *)contactInfoVC
+            pictureWithUrl:(NSString *)url
+{
+    return [FileManager pictureOfUrl:url];
+}
+
+
+#pragma mark - ContactInfoVCDelegate
+
+// 更新用户资料
+- (void)contactInfoVCGetUserInfo:(ContactInfoVC *)contactInfoVC
+{
+    [self.engineCore getUserInfoOf:contactInfoVC.userID];
+}
+
+// 下载指定url的头像
+- (void)contactInfoVC:(ContactInfoVC *)contactInfoVC
+downloadAvatarWithUrl:(NSString *)url
+{
+    [self.engineCore downloadPictureWithUrl:url];
 }
 
 @end

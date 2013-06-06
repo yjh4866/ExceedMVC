@@ -7,7 +7,21 @@
 //
 
 #import "CoreEngine+DB.h"
+#import "DBController+Message.h"
+#import "DBController+UserInfo.h"
 
 @implementation CoreEngine (DB)
+
+// 从数据库读取会话列表
+- (void)loadChats:(NSMutableArray *)marrChat
+{
+    [DBController loadChats:marrChat];
+}
+
+// 查询姓名
+- (NSString *)getUserNameOf:(UInt64)userID
+{
+    return [DBController getUserNameOf:userID];
+}
 
 @end

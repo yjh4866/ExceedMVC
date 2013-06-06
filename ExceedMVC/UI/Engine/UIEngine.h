@@ -12,10 +12,21 @@
 //Root
 #import "RootViewController.h"
 
+#import "MainVC.h"
+#import "ChatsVC.h"
+#import "ContactsVC.h"
+#import "MoreVC.h"
+#import "ChatVC.h"
+#import "LoginVC.h"
+#import "ContactInfoVC.h"
+
 
 @class CoreEngine;
 
-@interface UIEngine : NSObject <RootVCDelegate>
+@interface UIEngine : NSObject <RootVCDelegate, MainVCDataSource,
+ChatsVCDataSource, ChatsVCDelegate, ContactsVCDataSource, ContactsVCDelegate,
+MoreVCDataSource, MoreVCDelegate, ChatVCDataSource, ChatVCDelegate,
+ContactInfoVCDataSource, ContactInfoVCDelegate, LoginVCDelegate>
 
 @property (nonatomic, readonly) UIViewController *rootViewController;
 @property (nonatomic, retain) CoreEngine *engineCore;

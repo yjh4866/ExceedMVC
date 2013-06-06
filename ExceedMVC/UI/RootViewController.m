@@ -7,8 +7,12 @@
 //
 
 #import "RootViewController.h"
+#import "UIMacro.h"
 
-@interface RootViewController ()
+@interface RootViewController () {
+    
+    UIImageView *_imageViewBG;
+}
 
 @property (nonatomic, assign) BOOL firstAppear;
 
@@ -30,6 +34,13 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
+    //下面这段代码可以注释掉看一下效果 
+    if (nil == _imageViewBG) {
+        _imageViewBG = [[UIImageView alloc] initWithFrame:self.view.bounds];
+        SetImageForImageView(_imageViewBG, @"Default");
+    }
+    [self.view addSubview:_imageViewBG];
 }
 
 - (void)didReceiveMemoryWarning
@@ -38,8 +49,22 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)dealloc
+{
+    [_imageViewBG release];
+    
+    [super dealloc];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
+    _imageViewBG.frame = self.view.bounds;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
     if ([self.delegate respondsToSelector:@selector(rootVC:didFirstAppear:)]) {
         [self.delegate rootVC:self didFirstAppear:self.firstAppear];
     }

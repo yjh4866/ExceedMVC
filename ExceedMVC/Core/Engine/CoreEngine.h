@@ -25,6 +25,13 @@
 @end
 
 
+extern NSString *const NetUserInfoFailure;
+extern NSString *const NetUserInfoSuccess;
+
+extern NSString *const NetDownloadFileFailure;
+extern NSString *const NetDownloadFileSuccess;
+
+
 #ifdef DEBUG
 
 #define CORELOG(fmt,...)     NSLog((@"CORE->%s(%d):"fmt),__PRETTY_FUNCTION__,__LINE__,##__VA_ARGS__)

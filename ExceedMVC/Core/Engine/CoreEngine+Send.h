@@ -10,4 +10,10 @@
 
 @interface CoreEngine (Send)
 
+// 下载指定url的图片
+- (void)downloadPictureWithUrl:(NSString *)picUrl;
+
+// 获取指定用户资料
+- (void)getUserInfoOf:(UInt64)userID;
+
 @end
