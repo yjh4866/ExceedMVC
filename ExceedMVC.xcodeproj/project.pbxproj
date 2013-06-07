@@ -66,6 +66,8 @@
 		B17002571760DD990095211C /* FileManager+Picture.m in Sources */ = {isa = PBXBuildFile; fileRef = B17002561760DD990095211C /* FileManager+Picture.m */; };
 		B170025A1760E3F70095211C /* DBController+UserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B17002591760E3F70095211C /* DBController+UserInfo.m */; };
 		B170025D1760EC600095211C /* UserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B170025C1760EC600095211C /* UserInfo.m */; };
+		B1756D8617621B6E00C270E4 /* CoreEngine+AppSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756D8517621B6E00C270E4 /* CoreEngine+AppSetting.m */; };
+		B1756D8917621B7E00C270E4 /* CoreEngine+FileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756D8817621B7E00C270E4 /* CoreEngine+FileManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -179,6 +181,10 @@
 		B17002591760E3F70095211C /* DBController+UserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "DBController+UserInfo.m"; path = "Core/DB/DBController+UserInfo.m"; sourceTree = "<group>"; };
 		B170025B1760EC600095211C /* UserInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfo.h; sourceTree = "<group>"; };
 		B170025C1760EC600095211C /* UserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfo.m; sourceTree = "<group>"; };
+		B1756D8417621B6E00C270E4 /* CoreEngine+AppSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine+AppSetting.h"; path = "Core/Engine/CoreEngine+AppSetting.h"; sourceTree = "<group>"; };
+		B1756D8517621B6E00C270E4 /* CoreEngine+AppSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CoreEngine+AppSetting.m"; path = "Core/Engine/CoreEngine+AppSetting.m"; sourceTree = "<group>"; };
+		B1756D8717621B7E00C270E4 /* CoreEngine+FileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine+FileManager.h"; path = "Core/Engine/CoreEngine+FileManager.h"; sourceTree = "<group>"; };
+		B1756D8817621B7E00C270E4 /* CoreEngine+FileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CoreEngine+FileManager.m"; path = "Core/Engine/CoreEngine+FileManager.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -324,6 +330,10 @@
 				B115E3A71760C07700F31423 /* CoreEngine+Send.m */,
 				B115E3A91760C07700F31423 /* CoreEngine+Update.h */,
 				B115E3AA1760C07700F31423 /* CoreEngine+Update.m */,
+				B1756D8417621B6E00C270E4 /* CoreEngine+AppSetting.h */,
+				B1756D8517621B6E00C270E4 /* CoreEngine+AppSetting.m */,
+				B1756D8717621B7E00C270E4 /* CoreEngine+FileManager.h */,
+				B1756D8817621B7E00C270E4 /* CoreEngine+FileManager.m */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
@@ -574,6 +584,8 @@
 				B170025A1760E3F70095211C /* DBController+UserInfo.m in Sources */,
 				B170025D1760EC600095211C /* UserInfo.m in Sources */,
 				B1144D52176209620088F466 /* UIEngine+TabBar.m in Sources */,
+				B1756D8617621B6E00C270E4 /* CoreEngine+AppSetting.m in Sources */,
+				B1756D8917621B7E00C270E4 /* CoreEngine+FileManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
