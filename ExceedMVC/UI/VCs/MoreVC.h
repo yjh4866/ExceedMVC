@@ -30,4 +30,7 @@
 
 @optional
 
+// 显示关于页面
+- (void)moreVCShowAbout:(MoreVC *)moreVC;
+
 @end

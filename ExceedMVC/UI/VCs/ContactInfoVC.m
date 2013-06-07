@@ -117,6 +117,8 @@
 }
 
 
+#pragma mark - ClickEvent
+
 - (void)clickUpdate:(id)sender
 {
     if ([self.delegate respondsToSelector:@selector(contactInfoVCGetUserInfo:)]) {

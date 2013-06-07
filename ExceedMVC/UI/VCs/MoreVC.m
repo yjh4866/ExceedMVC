@@ -28,12 +28,29 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    button.frame = CGRectMake(100.0f, 200.0f, 120.0f, 50.0f);
+    [button setTitle:@"关于" forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(clickAbout:)
+     forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+
+#pragma mark - ClickEvent
+
+- (void)clickAbout:(id)sender
+{
+    if ([self.delegate respondsToSelector:@selector(moreVCShowAbout:)]) {
+        [self.delegate moreVCShowAbout:self];
+    }
 }
 
 @end

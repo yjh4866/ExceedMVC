@@ -126,4 +126,18 @@
     [contactInfoVC release];
 }
 
+
+#pragma mark - MoreVCDelegate
+
+// 显示关于页面
+- (void)moreVCShowAbout:(MoreVC *)moreVC
+{
+    AboutVC *aboutVC = [[AboutVC alloc] init];
+    aboutVC.delegate = self;
+    UINavigationController *navAbout = [[UINavigationController alloc] initWithRootViewController:aboutVC];
+    [self showViewController:navAbout onViewController:moreVC.navigationController.tabBarController];
+    [navAbout release];
+    [aboutVC release];
+}
+
 @end

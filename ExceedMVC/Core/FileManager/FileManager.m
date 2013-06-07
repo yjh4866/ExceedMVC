@@ -7,6 +7,7 @@
 //
 
 #import "FileManager.h"
+#import "FileManager+Picture.h"
 
 @implementation FileManager
 
@@ -25,6 +26,8 @@
 + (CGFloat)cacheUsed
 {
     NSUInteger capacity = 0;
+    //图片缓存目录
+    capacity += [FileManager allCapacityInPath:[FileManager cachePathForPicture]];
     //
     return capacity/(1024.0f*1024.0f);
 }
@@ -32,6 +35,8 @@
 // 清理缓存
 + (void)clearAllCache
 {
+    //清理图片缓存
+    [FileManager removeAllFilesInPath:[FileManager cachePathForPicture]];
 }
 
 

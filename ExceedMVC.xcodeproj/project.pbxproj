@@ -68,6 +68,7 @@
 		B170025D1760EC600095211C /* UserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B170025C1760EC600095211C /* UserInfo.m */; };
 		B1756D8617621B6E00C270E4 /* CoreEngine+AppSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756D8517621B6E00C270E4 /* CoreEngine+AppSetting.m */; };
 		B1756D8917621B7E00C270E4 /* CoreEngine+FileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756D8817621B7E00C270E4 /* CoreEngine+FileManager.m */; };
+		B1756E361762215B00C270E4 /* AboutVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756E351762215B00C270E4 /* AboutVC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -185,6 +186,8 @@
 		B1756D8517621B6E00C270E4 /* CoreEngine+AppSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CoreEngine+AppSetting.m"; path = "Core/Engine/CoreEngine+AppSetting.m"; sourceTree = "<group>"; };
 		B1756D8717621B7E00C270E4 /* CoreEngine+FileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine+FileManager.h"; path = "Core/Engine/CoreEngine+FileManager.h"; sourceTree = "<group>"; };
 		B1756D8817621B7E00C270E4 /* CoreEngine+FileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CoreEngine+FileManager.m"; path = "Core/Engine/CoreEngine+FileManager.m"; sourceTree = "<group>"; };
+		B1756E341762215B00C270E4 /* AboutVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutVC.h; sourceTree = "<group>"; };
+		B1756E351762215B00C270E4 /* AboutVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutVC.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -466,6 +469,8 @@
 				B115E40A1760C34400F31423 /* LoginVC.m */,
 				B115E40C1760C3AF00F31423 /* ContactInfoVC.h */,
 				B115E40D1760C3AF00F31423 /* ContactInfoVC.m */,
+				B1756E341762215B00C270E4 /* AboutVC.h */,
+				B1756E351762215B00C270E4 /* AboutVC.m */,
 			);
 			name = VCs;
 			path = UI/VCs;
@@ -586,6 +591,7 @@
 				B1144D52176209620088F466 /* UIEngine+TabBar.m in Sources */,
 				B1756D8617621B6E00C270E4 /* CoreEngine+AppSetting.m in Sources */,
 				B1756D8917621B7E00C270E4 /* CoreEngine+FileManager.m in Sources */,
+				B1756E361762215B00C270E4 /* AboutVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
