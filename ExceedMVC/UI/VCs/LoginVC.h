@@ -21,4 +21,9 @@
 
 @optional
 
+- (void)loginVC:(LoginVC *)loginVC loginWithUserName:(NSString *)userName
+    andPasswrod:(NSString *)password;
+
+- (void)loginVCLoginSuccess:(LoginVC *)loginVC;
+
 @end

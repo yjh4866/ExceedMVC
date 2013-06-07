@@ -37,6 +37,10 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    UIBarButtonItem *updateItem = [[UIBarButtonItem alloc] initWithTitle:@"更新" style:UIBarButtonItemStylePlain target:self action:@selector(clickUpdate:)];
+    self.navigationItem.rightBarButtonItem = updateItem;
+    [updateItem release];
+    
     if (nil == _imageViewAvatar) {
         _imageViewAvatar = [[UIImageView alloc] initWithFrame:CGRectMake(40.0f, 40.0f, 100.0f, 100.0f)];
         _imageViewAvatar.backgroundColor = [UIColor lightGrayColor];
@@ -53,9 +57,7 @@
     
     if ([self.dataSource respondsToSelector:@selector(contactInfoVC:loadUserInfo:)]) {
         [self.dataSource contactInfoVC:self loadUserInfo:_userInfo];
-    }
-    if ([self.delegate respondsToSelector:@selector(contactInfoVCGetUserInfo:)]) {
-        [self.delegate contactInfoVCGetUserInfo:self];
+        self.title = _userInfo.userName;
     }
 }
 
@@ -111,6 +113,14 @@
                 _imageViewAvatar.image = [self.dataSource contactInfoVC:self pictureWithUrl:_userInfo.avatarUrl];
             }
         }
+    }
+}
+
+
+- (void)clickUpdate:(id)sender
+{
+    if ([self.delegate respondsToSelector:@selector(contactInfoVCGetUserInfo:)]) {
+        [self.delegate contactInfoVCGetUserInfo:self];
     }
 }
 

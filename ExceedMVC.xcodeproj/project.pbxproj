@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B1144D52176209620088F466 /* UIEngine+TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B1144D51176209620088F466 /* UIEngine+TabBar.m */; };
 		B115E3641760C07700F31423 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B115E3631760C07700F31423 /* UIKit.framework */; };
 		B115E3661760C07700F31423 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B115E3651760C07700F31423 /* Foundation.framework */; };
 		B115E3681760C07700F31423 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B115E3671760C07700F31423 /* CoreGraphics.framework */; };
@@ -68,6 +69,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B1144D50176209620088F466 /* UIEngine+TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIEngine+TabBar.h"; path = "UI/Engine/UIEngine+TabBar.h"; sourceTree = "<group>"; };
+		B1144D51176209620088F466 /* UIEngine+TabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIEngine+TabBar.m"; path = "UI/Engine/UIEngine+TabBar.m"; sourceTree = "<group>"; };
 		B115E3601760C07700F31423 /* ExceedMVC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExceedMVC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B115E3631760C07700F31423 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B115E3651760C07700F31423 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -398,6 +401,8 @@
 			children = (
 				B115E3D61760C07800F31423 /* UIEngine.h */,
 				B115E3D71760C07800F31423 /* UIEngine.m */,
+				B1144D50176209620088F466 /* UIEngine+TabBar.h */,
+				B1144D51176209620088F466 /* UIEngine+TabBar.m */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
@@ -568,6 +573,7 @@
 				B17002571760DD990095211C /* FileManager+Picture.m in Sources */,
 				B170025A1760E3F70095211C /* DBController+UserInfo.m in Sources */,
 				B170025D1760EC600095211C /* UserInfo.m in Sources */,
+				B1144D52176209620088F466 /* UIEngine+TabBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

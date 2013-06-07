@@ -110,10 +110,12 @@
 {
     UInt64 userID = [[notif.userInfo objectForKey:@"userid"] longLongValue];
     NSString *userName = [notif.userInfo objectForKey:@"username"];
+    NSString *avatarUrl = [notif.userInfo objectForKey:@"avatar"];
     //
     for (ChatsItem *chatsItem in _marrChat) {
         if (chatsItem.userID == userID) {
             chatsItem.userName = userName;
+            chatsItem.avatarUrl = avatarUrl;
             [_tableView reloadData];
             break;
         }

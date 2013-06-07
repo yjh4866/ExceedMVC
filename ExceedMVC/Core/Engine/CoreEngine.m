@@ -28,6 +28,9 @@
         //网络
         _netController = [[NetController alloc] init];
         _netController.delegate = self;
+        
+        //这里设置成NO，即可测试需要登录的情况
+        self.online = YES;
     }
     return self;
 }
@@ -66,6 +69,8 @@
 
 #pragma mark - Notification
 
+NSString *const NetLoginFailure              = @"NetLoginFailure";
+NSString *const NetLoginSuccess              = @"NetLoginSuccess";
 NSString *const NetUserInfoFailure           = @"NetUserInfoFailure";
 NSString *const NetUserInfoSuccess           = @"NetUserInfoSuccess";
 

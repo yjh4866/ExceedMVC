@@ -22,7 +22,7 @@
     //
     for (int i = 0; i < 8; i++) {
         ChatsItem *chatsItem = [[ChatsItem alloc] init];
-        chatsItem.userID = i+1;
+        chatsItem.userID = 10+i;
         chatsItem.userName = [NSString stringWithFormat:@"好友%i", i+1];
         chatsItem.latestMsg = [NSString stringWithFormat:@"最新消息 %i", 10*i+rand()%13];
         chatsItem.avatarUrl = [arrAvatar objectAtIndex:rand()%arrAvatar.count];

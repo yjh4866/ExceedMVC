@@ -16,6 +16,8 @@
     NetController *_netController;
 }
 
+@property (nonatomic, assign) BOOL online;
+
 - (void)applicationWillEnterForeground;
 
 - (void)applicationDidEnterBackground;
@@ -25,6 +27,8 @@
 @end
 
 
+extern NSString *const NetLoginFailure;
+extern NSString *const NetLoginSuccess;
 extern NSString *const NetUserInfoFailure;
 extern NSString *const NetUserInfoSuccess;
 

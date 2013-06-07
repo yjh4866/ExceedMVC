@@ -11,6 +11,13 @@
 
 @implementation CoreEngine (Send)
 
+// 登录
+- (void)loginWithUserName:(NSString *)userName
+              andPassword:(NSString *)password
+{
+    [_netController loginWithUserName:userName andPassword:password];
+}
+
 // 下载指定url的图片
 - (void)downloadPictureWithUrl:(NSString *)picUrl
 {

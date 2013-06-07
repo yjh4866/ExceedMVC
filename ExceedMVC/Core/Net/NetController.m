@@ -22,6 +22,7 @@
 
 typedef NS_ENUM(NSUInteger, NetRequestType) {
     NetRequestType_None,
+    NetRequestType_Login,
     NetRequestType_UserInfo,
 };
 
@@ -60,6 +61,16 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
 
 #pragma mark - Public
 
+// 登录
+- (void)loginWithUserName:(NSString *)userName
+              andPassword:(NSString *)password
+{
+    NSString *url = @"http://www.sina.com";
+    NSDictionary *dicParam = @{@"type": [NSNumber numberWithInt:NetRequestType_Login]};
+    [_httpConnection requestWebDataWithURL:url andParam:dicParam
+                                     cache:YES priority:YES];
+}
+
 // 下载指定url的文件
 - (void)downloadFile:(NSString *)filePath withUrl:(NSString *)url
 {
@@ -86,6 +97,14 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
     NetRequestType requestType = [[dicParam objectForKey:@"type"] intValue];
     //
     switch (requestType) {
+            //登录
+        case NetRequestType_Login:
+        {
+            if ([self.delegate respondsToSelector:@selector(netController:loginError:)]) {
+                [self.delegate netController:self loginError:error];
+            }
+        }
+            break;
             //用户资料
         case NetRequestType_UserInfo:
         {
@@ -132,13 +151,23 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
     NetRequestType requestType = [[dicParam objectForKey:@"type"] intValue];
     //
     switch (requestType) {
+            //登录
+        case NetRequestType_Login:
+        {
+            if ([self.delegate respondsToSelector:@selector(netController:loginResult:)]) {
+                NSString *strWebData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                [self.delegate netController:self loginResult:strWebData];
+                [strWebData release];
+            }
+        }
+            break;
             //用户资料
         case NetRequestType_UserInfo:
         {
-            if ([self.delegate respondsToSelector:@selector(netController:userInfoSuccess:of:)]) {
+            if ([self.delegate respondsToSelector:@selector(netController:userInfoResult:of:)]) {
                 NSString *strWebData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                 UInt64 userID = [[dicParam objectForKey:@"userid"] longLongValue];
-                [self.delegate netController:self userInfoSuccess:strWebData of:userID];
+                [self.delegate netController:self userInfoResult:strWebData of:userID];
                 [strWebData release];
             }
         }

@@ -10,7 +10,6 @@
 #import "UIDevice+Custom.h"
 #import "CoreEngine+DB.h"
 #import "CoreEngine+Send.h"
-#import "AppDelegate.h"
 #import "FileManager.h"
 #import "FileManager+Picture.h"
 
@@ -55,92 +54,35 @@
 - (void)rootVC:(RootViewController *)rootVC didFirstAppear:(BOOL)firstAppear
 {
     if (firstAppear) {
-        MainVC *mainVC = [[MainVC alloc] init];
-        mainVC.dataSource = self;
-        if ([UIDevice systemVersionID] < __IPHONE_5_0) {
-            [_rootViewController presentModalViewController:mainVC animated:NO];
+        if (self.engineCore.online) {
+            MainVC *mainVC = [[MainVC alloc] init];
+            mainVC.dataSource = self;
+            if ([UIDevice systemVersionID] < __IPHONE_5_0) {
+                [_rootViewController presentModalViewController:mainVC
+                                                       animated:NO];
+            }
+            else {
+                [_rootViewController presentViewController:mainVC
+                                                  animated:NO completion:nil];
+            }
+            [mainVC release];
         }
         else {
-            [_rootViewController presentViewController:mainVC animated:NO completion:nil];
+            LoginVC *loginVC = [[LoginVC alloc] init];
+            loginVC.delegate = self;
+            UINavigationController *navLogin = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            if ([UIDevice systemVersionID] < __IPHONE_5_0) {
+                [_rootViewController presentModalViewController:navLogin
+                                                       animated:NO];
+            }
+            else {
+                [_rootViewController presentViewController:navLogin
+                                                  animated:NO completion:nil];
+            }
+            [navLogin release];
+            [loginVC release];
         }
-        [mainVC release];
     }
-}
-
-
-#pragma mark - MainVCDataSource
-
-// 加载Tab页面
-- (void)mainVC:(MainVC *)mainVC loadViewControllers:(NSMutableArray *)marray
-{
-    //会话
-    ChatsVC *chatsVC = [[ChatsVC alloc] init];
-    chatsVC.dataSource = self;
-    chatsVC.delegate = self;
-    UINavigationController *navChats = [[UINavigationController alloc] initWithRootViewController:chatsVC];
-    UITabBarItem *tabItemChats = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemBookmarks tag:0];
-    navChats.tabBarItem = tabItemChats;
-    [tabItemChats release];
-    [marray addObject:navChats];
-    [navChats release];
-    [chatsVC release];
-    //联系人
-    ContactsVC *contactsVC = [[ContactsVC alloc] init];
-    contactsVC.dataSource = self;
-    contactsVC.delegate = self;
-    UINavigationController *navContacts = [[UINavigationController alloc] initWithRootViewController:contactsVC];
-    UITabBarItem *tabItemContacts = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemContacts tag:1];
-    navContacts.tabBarItem = tabItemContacts;
-    [tabItemContacts release];
-    [marray addObject:navContacts];
-    [navContacts release];
-    [contactsVC release];
-    //更多
-    MoreVC *moreVC = [[MoreVC alloc] init];
-    moreVC.dataSource = self;
-    moreVC.delegate = self;
-    UINavigationController *navMore = [[UINavigationController alloc] initWithRootViewController:moreVC];
-    UITabBarItem *tabItemMore = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemMore tag:2];
-    navMore.tabBarItem = tabItemMore;
-    [tabItemMore release];
-    [marray addObject:navMore];
-    [navMore release];
-    [moreVC release];
-}
-
-
-#pragma mark - ChatsVCDataSource
-
-// 加载会话列表
-- (void)chatsVC:(ChatsVC *)chatsVC loadChats:(NSMutableArray *)marrChat
-{
-    [self.engineCore loadChats:marrChat];
-}
-
-// 加载指定url的图片
-- (UIImage *)chatsVC:(ChatsVC *)chatsVC pictureWithUrl:(NSString *)url
-{
-    return [FileManager pictureOfUrl:url];
-}
-
-
-#pragma mark - ChatsVCDelegate
-
-// 下载指定url的头像
-- (void)chatsVC:(ChatsVC *)chatsVC downloadAvatarWithUrl:(NSString *)url
-{
-    [self.engineCore downloadPictureWithUrl:url];
-}
-
-// 进入聊天页面
-- (void)chatsVC:(ChatsVC *)chatsVC chatWithFriend:(UInt64)friendID
-{
-    ChatVC *chatVC = [[ChatVC alloc] init];
-    chatVC.friendID = friendID;
-    chatVC.dataSource = self;
-    chatVC.delegate = self;
-    [chatsVC.navigationController pushViewController:chatVC animated:YES];
-    [chatVC release];
 }
 
 
@@ -197,6 +139,45 @@
 downloadAvatarWithUrl:(NSString *)url
 {
     [self.engineCore downloadPictureWithUrl:url];
+}
+
+
+#pragma mark - LoginVCDelegate
+
+- (void)loginVC:(LoginVC *)loginVC loginWithUserName:(NSString *)userName
+    andPasswrod:(NSString *)password
+{
+    [self.engineCore loginWithUserName:userName andPassword:password];
+}
+
+- (void)loginVCLoginSuccess:(LoginVC *)loginVC
+{
+    UIViewController *navLogin = [loginVC.navigationController retain];
+    if ([UIDevice systemVersionID] < __IPHONE_5_0) {
+        [_rootViewController dismissModalViewControllerAnimated:NO];
+        //
+        MainVC *mainVC = [[MainVC alloc] init];
+        mainVC.dataSource = self;
+        [_rootViewController presentModalViewController:mainVC animated:NO];
+        [mainVC presentModalViewController:navLogin animated:NO];
+        [mainVC release];
+        
+        [navLogin.parentViewController dismissModalViewControllerAnimated:YES];
+    }
+    else {
+        [_rootViewController dismissViewControllerAnimated:NO completion:nil];
+        //
+        MainVC *mainVC = [[MainVC alloc] init];
+        mainVC.dataSource = self;
+        [_rootViewController presentViewController:mainVC
+                                          animated:NO completion:nil];
+        [mainVC presentViewController:navLogin animated:NO completion:nil];
+        [mainVC release];
+        
+        [navLogin dismissViewControllerAnimated:YES
+                                                          completion:nil];
+    }
+    [navLogin release];
 }
 
 @end

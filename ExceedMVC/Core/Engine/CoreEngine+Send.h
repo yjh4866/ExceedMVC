@@ -10,6 +10,10 @@
 
 @interface CoreEngine (Send)
 
+// 登录
+- (void)loginWithUserName:(NSString *)userName
+              andPassword:(NSString *)password;
+
 // 下载指定url的图片
 - (void)downloadPictureWithUrl:(NSString *)picUrl;
 

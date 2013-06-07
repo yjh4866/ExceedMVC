@@ -11,6 +11,21 @@
 
 @implementation CoreEngine (Receive)
 
+// 网络原因登录失败
+- (void)netController:(NetController *)netController loginError:(NSError *)error
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:NetLoginFailure
+                                                        object:nil];
+}
+
+// 登录返回数据
+- (void)netController:(NetController *)netController loginResult:(NSString *)strWebData
+{
+    //假设成功 
+    [[NSNotificationCenter defaultCenter] postNotificationName:NetLoginSuccess
+                                                        object:nil];
+}
+
 // 网络原因用户资料获取失败
 - (void)netController:(NetController *)netController userInfoError:(NSError *)error of:(UInt64)userID
 {
@@ -19,10 +34,14 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:NetUserInfoFailure object:nil userInfo:dicUserInfo];
 }
 
-// 网络原因用户资料获取失败
-- (void)netController:(NetController *)netController userInfoSuccess:(NSString *)strWebData of:(UInt64)userID
+// 获取用户资料返回数据
+- (void)netController:(NetController *)netController userInfoResult:(NSString *)strWebData of:(UInt64)userID
 {
+    //数据错误的话也是失败噢，这里以正确处理
+    
     //是个网页数据，服务器端不通的情况下可以在这里加测试数据
+    //需要先将数据保存到数据库噢
+    //消息中心多发
     NSString *newUserName = [NSString stringWithFormat:@"好友%lld新名字", userID];
     NSDictionary *dicUserInfo = @{@"userid": [NSNumber numberWithLongLong:userID],
                                   @"username": newUserName,

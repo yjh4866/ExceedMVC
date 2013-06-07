@@ -24,4 +24,10 @@
     return [DBController getUserNameOf:userID];
 }
 
+// 从数据库加载好友列表
+- (void)loadContacts:(NSMutableArray *)marrContact
+{
+    [DBController loadContacts:marrContact];
+}
+
 @end
