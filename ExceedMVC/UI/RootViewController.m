@@ -38,7 +38,12 @@
     //下面这段代码可以注释掉看一下效果 
     if (nil == _imageViewBG) {
         _imageViewBG = [[UIImageView alloc] initWithFrame:self.view.bounds];
-        SetImageForImageView(_imageViewBG, @"Default");
+        if (IsIphone5()) {
+            SetImageForImageView(_imageViewBG, @"Default-568h@2x");
+        }
+        else {
+            SetImageForImageView(_imageViewBG, @"Default@2x");
+        }
     }
     [self.view addSubview:_imageViewBG];
 }
