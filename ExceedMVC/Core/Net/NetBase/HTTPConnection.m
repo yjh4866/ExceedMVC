@@ -17,26 +17,23 @@
 
 @interface HTTPConnection () {
     //
-    int _numberOfURLConnection;
-    int _maxNumberOfURLConnection;
     NSMutableArray *_marrayTaskDic;
 }
-- (void)startURLConnection;
+
+@property (nonatomic, assign) NSUInteger numberOfURLConnection;
+
 @end
 
 
 @implementation HTTPConnection
-
-@synthesize maxNumberOfURLConnection = _maxNumberOfURLConnection;
-@synthesize delegate = _delegate;
 
 - (id)init
 {
     self = [super init];
     if (self) {
         // Custom initialization.
-        _numberOfURLConnection = 0;
-        _maxNumberOfURLConnection = MAXNUMBER_URLCONNECTION;
+        self.numberOfURLConnection = 0;
+        self.maxNumberOfURLConnection = MAXNUMBER_URLCONNECTION;
         _marrayTaskDic = [[NSMutableArray alloc] initWithCapacity:5];
     }
     return self;
@@ -186,7 +183,7 @@
                 [connect start];
             }
             else {
-                _numberOfURLConnection -= 1;
+                self.numberOfURLConnection -= 1;
             }
             [connect cancel];
             //从任务队列中删除
@@ -211,7 +208,7 @@
         }
         else {
             //
-            _numberOfURLConnection -= 1;
+            self.numberOfURLConnection -= 1;
         }
         [connect cancel];
     }
@@ -241,14 +238,14 @@
     //删除失败的任务
     if (dicTask) {
         //删除
-        _numberOfURLConnection -= 1;
+        self.numberOfURLConnection -= 1;
         [_marrayTaskDic removeObjectAtIndex:indexTask];
         //启动新任务
         [self startURLConnection];
         //通知上层任务失败
         NSDictionary *dicParam = [dicTask objectForKey:@"param"];
-        if ([_delegate respondsToSelector:@selector(httpConnect:error:with:)]) {
-            [_delegate httpConnect:self error:error with:dicParam];
+        if ([self.delegate respondsToSelector:@selector(httpConnect:error:with:)]) {
+            [self.delegate httpConnect:self error:error with:dicParam];
         }
     }
     [dicTask release];
@@ -330,15 +327,15 @@
     //删除已经完成的任务
     if (dicTask) {
         //删除
-        _numberOfURLConnection -= 1;
+        self.numberOfURLConnection -= 1;
         [_marrayTaskDic removeObjectAtIndex:indexTask];
         //启动新任务
         [self startURLConnection];
         //通知上层完成任务
-        if ([_delegate respondsToSelector:@selector(httpConnect:finish:with:)]) {
+        if ([self.delegate respondsToSelector:@selector(httpConnect:finish:with:)]) {
             NSData *dataCache = [dicTask objectForKey:@"cache"];
             NSDictionary *dicParam = [dicTask objectForKey:@"param"];
-            [_delegate httpConnect:self finish:dataCache with:dicParam];
+            [self.delegate httpConnect:self finish:dataCache with:dicParam];
         }
     }
     [dicTask release];
@@ -349,8 +346,8 @@
 
 - (void)startURLConnection
 {
-    if (_numberOfURLConnection < _maxNumberOfURLConnection) {
-        if (_numberOfURLConnection < _marrayTaskDic.count) {
+    if (self.numberOfURLConnection < self.maxNumberOfURLConnection) {
+        if (self.numberOfURLConnection < _marrayTaskDic.count) {
             //找到等待状态的任务
             for (NSMutableDictionary *mdicTask in _marrayTaskDic) {
                 if ([TASKSTATUS_WAIT isEqualToString:[mdicTask objectForKey:@"status"]]) {
@@ -363,12 +360,12 @@
                 }
             }
             //
-            _numberOfURLConnection += 1;
+            self.numberOfURLConnection += 1;
         }
     }
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = _numberOfURLConnection>0;
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = self.numberOfURLConnection>0;
     HTTPLog(@"正在处理的网络请求数：%i，等待处理的网络请求：%i", 
-            _numberOfURLConnection, _marrayTaskDic.count-_numberOfURLConnection);
+            self.numberOfURLConnection, _marrayTaskDic.count-self.numberOfURLConnection);
 }
 
 @end

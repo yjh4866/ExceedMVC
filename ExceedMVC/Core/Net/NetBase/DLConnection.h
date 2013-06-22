@@ -15,10 +15,11 @@
 @property (nonatomic, assign) id <DLConnectionDelegate> delegate;
 
 // 是否为下载状态
-- (BOOL)bookIsDownloadingWith:(NSString *)filePath andUrl:(NSString *)url;
+- (BOOL)fileIsDownloadingWith:(NSString *)filePath andUrl:(NSString *)url;
 
 // 下载文件到指定路径
-- (void)downloadFile:(NSString *)filePath from:(NSString *)url;
+- (void)downloadFile:(NSString *)filePath from:(NSString *)url
+           withParam:(NSDictionary *)dicParam;
 
 // 暂停下载文件
 - (void)pauseDownloadFile:(NSString *)filePath from:(NSString *)url;
@@ -38,18 +39,21 @@
 
 // 下载失败
 - (void)dlConnection:(DLConnection *)dlConnection downloadFailure:(NSError *)error
-            withPath:(NSString *)filePath andUrl:(NSString *)url;
+            withPath:(NSString *)filePath url:(NSString *)url
+            andParam:(NSDictionary *)dicParam;
 
 // 得到文件实际大小
 - (void)dlConnection:(DLConnection *)dlConnection fileSize:(NSUInteger)fileSize
-            withPath:(NSString *)filePath andUrl:(NSString *)url;
+            withPath:(NSString *)filePath url:(NSString *)url
+            andParam:(NSDictionary *)dicParam;
 
 // 收到的数据发生变化
 - (void)dlConnection:(DLConnection *)dlConnection receivedSize:(NSUInteger)receivedSize
-            withPath:(NSString *)filePath andUrl:(NSString *)url;
+            withPath:(NSString *)filePath url:(NSString *)url
+            andParam:(NSDictionary *)dicParam;
 
 // 下载完成
 - (void)dlConnection:(DLConnection *)dlConnection finishedWithPath:(NSString *)filePath
-              andUrl:(NSString *)url;
+                 url:(NSString *)url andParam:(NSDictionary *)dicParam;
 
 @end

@@ -10,7 +10,7 @@
 #import "HTTPConnection.h"
 
 
-#define TempFilePath_Book(filePath)  [filePath stringByAppendingPathExtension:@"temp"]
+#define TempFilePath_File(filePath)  [filePath stringByAppendingPathExtension:@"temp"]
 
 
 enum {
@@ -51,7 +51,7 @@ typedef NSInteger NetDownloadType;
 #pragma mark - Public
 
 // 是否为下载状态
-- (BOOL)bookIsDownloadingWith:(NSString *)filePath andUrl:(NSString *)url
+- (BOOL)fileIsDownloadingWith:(NSString *)filePath andUrl:(NSString *)url
 {
     NSDictionary *dicParam0 = [[NSDictionary alloc] initWithObjectsAndKeys:
                                [NSNumber numberWithInt:NetDownloadType_FileSize], @"type",
@@ -69,21 +69,22 @@ typedef NSInteger NetDownloadType;
 
 // 下载文件到指定路径
 - (void)downloadFile:(NSString *)filePath from:(NSString *)url
+           withParam:(NSDictionary *)dicParam
 {
-    NSString *tempFilePath = TempFilePath_Book(filePath);
+    NSString *tempFilePath = TempFilePath_File(filePath);
     //如果临时文件不存在则先查看文件大小
     if (![[NSFileManager defaultManager] fileExistsAtPath:tempFilePath]) {
         //
         NSMutableURLRequest *mURLRequest = [[NSMutableURLRequest alloc] init];
         [mURLRequest setHTTPMethod:@"HEAD"];
         [mURLRequest setURL:[NSURL URLWithString:url]];
-        NSDictionary *dicParam = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                  [NSNumber numberWithInt:NetDownloadType_FileSize], @"type",
-                                  filePath, @"filePath", url, @"url", nil];
-        [_httpDownload requestWebDataWithRequest:mURLRequest andParam:dicParam
+        NSDictionary *dicInterParam = @{@"type": [NSNumber numberWithInt:NetDownloadType_FileSize],
+                                        @"filePath": filePath,
+                                        @"url": url, @"param": dicParam};
+        [_httpDownload requestWebDataWithRequest:mURLRequest
+                                        andParam:dicInterParam
                                            cache:NO priority:YES];
         [mURLRequest release];
-        [dicParam release];
     }
     else {
         //先读取已经下载到的数据
@@ -96,13 +97,13 @@ typedef NSInteger NetDownloadType;
         [mURLRequest setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];
         [mURLRequest setTimeoutInterval:10.0f];
         //
-        NSDictionary *dicParam = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                  [NSNumber numberWithInt:NetDownloadType_Download], @"type",
-                                  filePath, @"filePath", url, @"url", nil];
-        [_httpDownload requestWebDataWithRequest:mURLRequest andParam:dicParam
+        NSDictionary *dicInterParam = @{@"type": [NSNumber numberWithInt:NetDownloadType_Download],
+                                        @"filePath": filePath,
+                                        @"url": url, @"param": dicParam};
+        [_httpDownload requestWebDataWithRequest:mURLRequest
+                                        andParam:dicInterParam
                                            cache:NO priority:YES];
         [mURLRequest release];
-        [dicParam release];
     }
 }
 
@@ -127,7 +128,7 @@ typedef NSInteger NetDownloadType;
 + (NSUInteger)fileSizeOf:(NSString *)filePath
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *tempFilePath = TempFilePath_Book(filePath);
+    NSString *tempFilePath = TempFilePath_File(filePath);
     if ([fileManager fileExistsAtPath:tempFilePath]) {
         //从文件尾部读4个字节
         UInt32 fileSize;
@@ -154,7 +155,7 @@ typedef NSInteger NetDownloadType;
 // 查看指定路径的文件已经下载到的大小
 + (NSUInteger)receivedSizeOf:(NSString *)filePath
 {
-    NSString *tempFilePath = TempFilePath_Book(filePath);
+    NSString *tempFilePath = TempFilePath_File(filePath);
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:tempFilePath]) {
         NSDictionary *dicAttributes = [fileManager attributesOfItemAtPath:tempFilePath error:nil];
@@ -171,11 +172,13 @@ typedef NSInteger NetDownloadType;
 // 网络数据下载失败
 - (void)httpConnect:(HTTPConnection *)httpConnect error:(NSError *)error with:(NSDictionary *)dicParam
 {
-    if ([self.delegate respondsToSelector:@selector(dlConnection:downloadFailure:withPath:andUrl:)]) {
+    if ([self.delegate respondsToSelector:@selector(dlConnection:downloadFailure:withPath:url:andParam:)]) {
         NSString *filePath = [dicParam objectForKey:@"filePath"];
         NSString *url = [dicParam objectForKey:@"url"];
+        
         [self.delegate dlConnection:self downloadFailure:error
-                           withPath:filePath andUrl:url];
+                           withPath:filePath url:url
+                           andParam:[dicParam objectForKey:@"param"]];
     }
 }
 
@@ -194,15 +197,18 @@ typedef NSInteger NetDownloadType;
             NSString *url = [dicParam objectForKey:@"url"];
             UInt32 fileSize = [[dicAllHeaderFields objectForKey:@"Content-Length"] intValue];
             //将文件大小保存到临时文件尾部
-            NSString *tempFilePath = TempFilePath_Book(filePath);
+            NSString *tempFilePath = TempFilePath_File(filePath);
             NSData *dataFileSize = [NSData dataWithBytes:&fileSize length:4];
             [dataFileSize writeToFile:tempFilePath atomically:YES];
             //通知文件大小
-            if ([self.delegate respondsToSelector:@selector(dlConnection:fileSize:withPath:andUrl:)]) {
-                [self.delegate dlConnection:self fileSize:fileSize withPath:filePath andUrl:url];
+            if ([self.delegate respondsToSelector:@selector(dlConnection:fileSize:withPath:url:andParam:)]) {
+                [self.delegate dlConnection:self fileSize:fileSize
+                                   withPath:filePath url:url
+                                   andParam:[dicParam objectForKey:@"param"]];
             }
             //请求下载
-            [self downloadFile:filePath from:url];
+            [self downloadFile:filePath from:url
+                     withParam:[dicParam objectForKey:@"param"]];
         }
             break;
         default:
@@ -224,7 +230,7 @@ typedef NSInteger NetDownloadType;
             UInt32 fileSize = [DLConnection fileSizeOf:filePath];
             NSUInteger receivedSize = [DLConnection receivedSizeOf:filePath];
             //将下载到的数据写到文件相应位置
-            NSString *tempFilePath = TempFilePath_Book(filePath);
+            NSString *tempFilePath = TempFilePath_File(filePath);
             NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:tempFilePath];
             [fileHandle seekToFileOffset:receivedSize];
             [fileHandle writeData:partData];
@@ -235,10 +241,11 @@ typedef NSInteger NetDownloadType;
             //更新文件尺寸
             receivedSize += partData.length;
             //通知下载进度
-            if ([self.delegate respondsToSelector:@selector(dlConnection:receivedSize:withPath:andUrl:)]) {
+            if ([self.delegate respondsToSelector:@selector(dlConnection:receivedSize:withPath:url:andParam:)]) {
                 NSString *url = [dicParam objectForKey:@"url"];
                 [self.delegate dlConnection:self receivedSize:receivedSize
-                                   withPath:filePath andUrl:url];
+                                   withPath:filePath url:url
+                                   andParam:[dicParam objectForKey:@"param"]];
             }
         }
             break;
@@ -260,16 +267,18 @@ typedef NSInteger NetDownloadType;
             NSString *filePath = [dicParam objectForKey:@"filePath"];
             NSUInteger partSize = [DLConnection receivedSizeOf:filePath];
             //将临时文件尾部的文件大小数据截断
-            NSString *tempFilePath = TempFilePath_Book(filePath);
+            NSString *tempFilePath = TempFilePath_File(filePath);
             NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:tempFilePath];
             [fileHandle truncateFileAtOffset:partSize];
             [fileHandle closeFile];
             //修改文件名
             [[NSFileManager defaultManager] moveItemAtPath:tempFilePath toPath:filePath error:nil];
             //通知下载完成
-            if ([self.delegate respondsToSelector:@selector(dlConnection:finishedWithPath:andUrl:)]) {
+            if ([self.delegate respondsToSelector:@selector(dlConnection:finishedWithPath:url:andParam:)]) {
                 NSString *url = [dicParam objectForKey:@"url"];
-                [self.delegate dlConnection:self finishedWithPath:filePath andUrl:url];
+                [self.delegate dlConnection:self
+                           finishedWithPath:filePath url:url
+                                   andParam:[dicParam objectForKey:@"param"]];
             }
         }
             break;
