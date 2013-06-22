@@ -74,7 +74,7 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
 // 下载指定url的文件
 - (void)downloadFile:(NSString *)filePath withUrl:(NSString *)url
 {
-    [_downloadConnection downloadFile:filePath from:url];
+    [_downloadConnection downloadFile:filePath from:url withParam:nil];
 }
 
 // 获取指定用户资料
@@ -182,7 +182,8 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
 
 // 下载失败
 - (void)dlConnection:(DLConnection *)dlConnection downloadFailure:(NSError *)error
-            withPath:(NSString *)filePath andUrl:(NSString *)url
+            withPath:(NSString *)filePath url:(NSString *)url
+            andParam:(NSDictionary *)dicParam
 {
     if ([self.delegate respondsToSelector:@selector(netController:downloadFileError:with:andUrl:)]) {
         [self.delegate netController:self downloadFileError:error with:filePath andUrl:url];
@@ -191,19 +192,21 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
 
 // 得到文件实际大小
 - (void)dlConnection:(DLConnection *)dlConnection fileSize:(NSUInteger)fileSize
-            withPath:(NSString *)filePath andUrl:(NSString *)url
+            withPath:(NSString *)filePath url:(NSString *)url
+            andParam:(NSDictionary *)dicParam
 {
 }
 
 // 收到的数据发生变化
 - (void)dlConnection:(DLConnection *)dlConnection receivedSize:(NSUInteger)receivedSize
-            withPath:(NSString *)filePath andUrl:(NSString *)url
+            withPath:(NSString *)filePath url:(NSString *)url
+            andParam:(NSDictionary *)dicParam
 {
 }
 
 // 下载完成
 - (void)dlConnection:(DLConnection *)dlConnection finishedWithPath:(NSString *)filePath
-              andUrl:(NSString *)url
+              url:(NSString *)url andParam:(NSDictionary *)dicParam
 {
     if ([self.delegate respondsToSelector:@selector(netController:downloadFileSuccessWith:andUrl:)]) {
         [self.delegate netController:self downloadFileSuccessWith:filePath andUrl:url];
