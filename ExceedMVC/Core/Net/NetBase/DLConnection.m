@@ -78,12 +78,13 @@ typedef NSInteger NetDownloadType;
         NSMutableURLRequest *mURLRequest = [[NSMutableURLRequest alloc] init];
         [mURLRequest setHTTPMethod:@"HEAD"];
         [mURLRequest setURL:[NSURL URLWithString:url]];
-        NSDictionary *dicInterParam = @{@"type": [NSNumber numberWithInt:NetDownloadType_FileSize],
-                                        @"filePath": filePath,
-                                        @"url": url, @"param": dicParam};
+        NSDictionary *dicInterParam = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInt:NetDownloadType_FileSize], @"type",
+                                       filePath, @"filePath",
+                                       url, @"url", dicParam, @"param", nil];
         [_httpDownload requestWebDataWithRequest:mURLRequest
                                         andParam:dicInterParam
                                            cache:NO priority:YES];
+        [dicInterParam release];
         [mURLRequest release];
     }
     else {
@@ -97,12 +98,13 @@ typedef NSInteger NetDownloadType;
         [mURLRequest setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];
         [mURLRequest setTimeoutInterval:10.0f];
         //
-        NSDictionary *dicInterParam = @{@"type": [NSNumber numberWithInt:NetDownloadType_Download],
-                                        @"filePath": filePath,
-                                        @"url": url, @"param": dicParam};
+        NSDictionary *dicInterParam = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInt:NetDownloadType_Download], @"type",
+                                       filePath, @"filePath",
+                                       url, @"url", dicParam, @"param", nil];
         [_httpDownload requestWebDataWithRequest:mURLRequest
                                         andParam:dicInterParam
                                            cache:NO priority:YES];
+        [dicInterParam release];
         [mURLRequest release];
     }
 }
