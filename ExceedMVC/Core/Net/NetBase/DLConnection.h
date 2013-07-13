@@ -1,6 +1,6 @@
 //
 //  DLConnection.h
-//  
+//
 //
 //  Created by Jianhong Yang on 13-3-14.
 //  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
@@ -8,14 +8,22 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSUInteger, DownloadStatus) {
+    DownloadStatus_Null,
+    DownloadStatus_Downloading,
+    DownloadStatus_Waiting,
+    DownloadStatus_NotExist,
+};
+
 @protocol DLConnectionDelegate;
 
 @interface DLConnection : NSObject
 
+@property (nonatomic, assign) NSUInteger maxNumberOfDLConnection;//同时下载数
 @property (nonatomic, assign) id <DLConnectionDelegate> delegate;
 
-// 是否为下载状态
-- (BOOL)fileIsDownloadingWith:(NSString *)filePath andUrl:(NSString *)url;
+// 文件下载状态
+- (DownloadStatus)fileDownloadStatusWith:(NSString *)filePath andUrl:(NSString *)url;
 
 // 下载文件到指定路径
 - (void)downloadFile:(NSString *)filePath from:(NSString *)url
@@ -23,6 +31,9 @@
 
 // 暂停下载文件
 - (void)pauseDownloadFile:(NSString *)filePath from:(NSString *)url;
+
+// 取消下载图书文件
+- (void)cancelDownloadFile:(NSString *)filePath from:(NSString *)url;
 
 // 查看指定路径的文件总大小
 + (NSUInteger)fileSizeOf:(NSString *)filePath;
