@@ -1,9 +1,9 @@
 //
 //  DLConnection.m
+//  BookReader
 //
-//
-//  Created by Jianhong Yang on 13-3-14.
-//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//  Created by CocoaChina_yangjh on 13-3-14.
+//  Copyright (c) 2013年 CocoaChina. All rights reserved.
 //
 
 #import "DLConnection.h"
@@ -30,6 +30,7 @@
 @property (nonatomic, retain) NSDictionary *param;
 @property (nonatomic, retain) NSData *receivedData;
 @property (nonatomic, readonly) NSUInteger finishedSize;
+@property (nonatomic, assign) BOOL fileEnd;
 @property (nonatomic, assign) id <SaveFileDataOperationDelegate> delegate;
 
 @end
@@ -42,6 +43,7 @@
     self.url = nil;
     self.param = nil;
     self.receivedData = nil;
+    self.delegate = nil;
     
     [super dealloc];
 }
@@ -65,7 +67,8 @@
         //
         _finishedSize = receivedSize+self.receivedData.length;
     }
-    else {
+    //文件结束
+    if (self.fileEnd) {
         NSUInteger receivedSize = [DLConnection receivedSizeOf:self.filePath];
         //将临时文件尾部的文件大小数据截断
         NSString *tempFilePath = TempFilePath_File(self.filePath);
@@ -107,7 +110,9 @@ typedef NSInteger NetDownloadType;
     
     NSMutableArray *_marrDownloadItem;
     NSMutableArray *_marrWaitItem;
-    NSOperationQueue *_queueSaveData;
+    //
+    NSMutableDictionary *_mdicReceivedData;
+    NSMutableDictionary *_mdicSaveDataQueue;
 }
 
 @end
@@ -119,26 +124,27 @@ typedef NSInteger NetDownloadType;
     self = [super init];
     if (self) {
         self.maxNumberOfDLConnection = 5;
+        _httpDownload = [[HTTPConnection alloc] init];
+        _httpDownload.maxNumberOfURLConnection = 5;
+        _httpDownload.delegate = self;
+        //
         _marrDownloadItem = [[NSMutableArray alloc] init];
         _marrWaitItem = [[NSMutableArray alloc] init];
         //
-        _httpDownload = [[HTTPConnection alloc] init];
-        _httpDownload.maxNumberOfURLConnection = 2;
-        _httpDownload.delegate = self;
-        //
-        _queueSaveData = [[NSOperationQueue alloc] init];
-        _queueSaveData.maxConcurrentOperationCount = 1;
+        _mdicReceivedData = [[NSMutableDictionary alloc] init];
+        _mdicSaveDataQueue = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [_marrDownloadItem release];
-    [_marrWaitItem release];
     [_httpDownload release];
     //
-    [_queueSaveData release];
+    [_marrDownloadItem release];
+    [_marrWaitItem release];
+    [_mdicReceivedData release];
+    [_mdicSaveDataQueue release];
     
     [super dealloc];
 }
@@ -157,6 +163,10 @@ typedef NSInteger NetDownloadType;
                                    inArray:_marrWaitItem]) {
         return DownloadStatus_Waiting;
     }
+    //
+    if ([_mdicSaveDataQueue objectForKey:filePath]) {
+        return DownloadStatus_Downloading;
+    }
     return DownloadStatus_NotExist;
 }
 
@@ -172,8 +182,7 @@ typedef NSInteger NetDownloadType;
     }
     //添加到等待队列
     if (dicParam) {
-        [_marrWaitItem addObject:@{@"filepath": filePath, @"url": url,
-         @"param": dicParam}];
+        [_marrWaitItem addObject:@{@"filepath": filePath, @"url": url, @"param": dicParam}];
     }
     else {
         [_marrWaitItem addObject:@{@"filepath": filePath, @"url": url}];
@@ -203,8 +212,13 @@ typedef NSInteger NetDownloadType;
         [self startNewTaskFromWaitQueue];
     }
     else {
+        //
         [self removeTaskWithFilePath:filePath andUrl:url fromArray:_marrWaitItem];
     }
+    //取消该文件的保存任务，并删除Operation队列
+    NSOperationQueue *queue = [_mdicSaveDataQueue objectForKey:filePath];
+    [queue cancelAllOperations];
+    [_mdicSaveDataQueue removeObjectForKey:filePath];
 }
 
 // 取消下载图书文件
@@ -212,6 +226,8 @@ typedef NSInteger NetDownloadType;
 {
     //暂停下载
     [self pauseDownloadFile:filePath from:url];
+    //删除未保存的数据
+    [_mdicReceivedData removeObjectForKey:filePath];
     //删除临时文件
     NSString *tempFilePath = TempFilePath_File(filePath);
     [[NSFileManager defaultManager] removeItemAtPath:tempFilePath error:nil];
@@ -274,7 +290,7 @@ typedef NSInteger NetDownloadType;
         [self.delegate dlConnection:self downloadFailure:error
                            withPath:filePath url:url andParam:param];
     }
-    //从下载队列移除
+    //从当前下载任务中移除
     [self removeTaskWithFilePath:filePath andUrl:url fromArray:_marrDownloadItem];
     //启动新任务
     [self startNewTaskFromWaitQueue];
@@ -324,15 +340,28 @@ typedef NSInteger NetDownloadType;
         {
             NSString *filePath = [dicParam objectForKey:@"filePath"];
             NSString *url = [dicParam objectForKey:@"url"];
-            //
-            SaveFileDataOperation *operation = [[SaveFileDataOperation alloc] init];
-            operation.filePath = filePath;
-            operation.url = url;
-            operation.param = [self getParamWithFilePath:filePath andUrl:url fromArray:_marrDownloadItem];
-            operation.receivedData = partData;
-            operation.delegate = self;
-            [_queueSaveData addOperation:operation];
-            [operation release];
+            NSDictionary *param = [dicParam objectForKey:@"param"];
+            //缓存数据
+            NSMutableData *mdata = [_mdicReceivedData objectForKey:filePath];
+            [mdata appendData:partData];
+            //查看Operation队列里是否已经存在该文件的保存任务，无任务则添加任务
+            NSOperationQueue *queue = [_mdicSaveDataQueue objectForKey:filePath];
+            if (queue.operationCount == 0) {
+                //无任务则创建任务
+                SaveFileDataOperation *operation = [[SaveFileDataOperation alloc] init];
+                operation.filePath = filePath;
+                operation.url = url;
+                operation.param = param;
+                operation.receivedData = mdata;
+                operation.fileEnd = NO;
+                operation.delegate = self;
+                [queue addOperation:operation];
+                [operation release];
+                //
+                NSMutableData *mdata = [[NSMutableData alloc] init];
+                [_mdicReceivedData setObject:mdata forKey:filePath];
+                [mdata release];
+            }
         }
             break;
         default:
@@ -352,15 +381,20 @@ typedef NSInteger NetDownloadType;
         {
             NSString *filePath = [dicParam objectForKey:@"filePath"];
             NSString *url = [dicParam objectForKey:@"url"];
-            //
+            NSDictionary *param = [dicParam objectForKey:@"param"];
+            //创建结束的Operation
             SaveFileDataOperation *operation = [[SaveFileDataOperation alloc] init];
             operation.filePath = filePath;
             operation.url = url;
-            operation.param = [self getParamWithFilePath:filePath andUrl:url fromArray:_marrDownloadItem];
-            operation.receivedData = nil;
+            operation.param = param;
+            operation.receivedData = [_mdicReceivedData objectForKey:filePath];
+            operation.fileEnd = YES;
+            operation.param = param;
             operation.delegate = self;
-            [_queueSaveData addOperation:operation];
+            [[_mdicSaveDataQueue objectForKey:filePath] addOperation:operation];
             [operation release];
+            //删除缓存
+            [_mdicReceivedData removeObjectForKey:filePath];
             
             //从下载队列移除
             [self removeTaskWithFilePath:filePath andUrl:url
@@ -380,19 +414,39 @@ typedef NSInteger NetDownloadType;
 // 数据保存完毕
 - (void)saveFileDataOperationFinished:(SaveFileDataOperation *)operation
 {
-    if (operation.receivedData) {
+    if (operation.fileEnd) {
+        //通知下载完成
+        if ([self.delegate respondsToSelector:@selector(dlConnection:finishedWithPath:url:andParam:)]) {
+            [self.delegate dlConnection:self finishedWithPath:operation.filePath
+                                    url:operation.url andParam:operation.param];
+        }
+        //删除Operation队列
+        [_mdicSaveDataQueue removeObjectForKey:operation.filePath];
+    }
+    else {
         //通知下载进度
         if ([self.delegate respondsToSelector:@selector(dlConnection:receivedSize:withPath:url:andParam:)]) {
             [self.delegate dlConnection:self receivedSize:operation.finishedSize
                                withPath:operation.filePath url:operation.url
                                andParam:operation.param];
         }
-    }
-    else {
-        //通知下载完成
-        if ([self.delegate respondsToSelector:@selector(dlConnection:finishedWithPath:url:andParam:)]) {
-            [self.delegate dlConnection:self finishedWithPath:operation.filePath
-                                    url:operation.url andParam:operation.param];
+        //
+        NSData *fileData = [_mdicReceivedData objectForKey:operation.filePath];
+        //有数据则继续创建Operation任务
+        if (fileData.length > 0) {
+            SaveFileDataOperation *operationNew = [[SaveFileDataOperation alloc] init];
+            operationNew.filePath = operation.filePath;
+            operationNew.url = operation.url;
+            operationNew.param = operation.param;
+            operationNew.receivedData = fileData;
+            operationNew.fileEnd = NO;
+            operationNew.delegate = self;
+            [[_mdicSaveDataQueue objectForKey:operation.filePath] addOperation:operationNew];
+            [operationNew release];
+            //
+            NSMutableData *mdata = [[NSMutableData alloc] init];
+            [_mdicReceivedData setObject:mdata forKey:operation.filePath];
+            [mdata release];
         }
     }
 }
@@ -418,10 +472,24 @@ typedef NSInteger NetDownloadType;
     NSDictionary *dicTask = [_marrWaitItem objectAtIndex:0];
     [_marrDownloadItem addObject:dicTask];
     [_marrWaitItem removeObjectAtIndex:0];
-    
     //
     NSString *filePath = [dicTask objectForKey:@"filepath"];
     NSString *url = [dicTask objectForKey:@"url"];
+    //通知下载状态变更
+    if ([self.delegate respondsToSelector:@selector(dlConnection:statusChangedWithPath:url:andParam:)]) {
+        [self.delegate dlConnection:self statusChangedWithPath:filePath
+                                url:url andParam:[dicTask objectForKey:@"param"]];
+    }
+    //为下载任务创建Operation队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    queue.maxConcurrentOperationCount = 1;
+    [_mdicSaveDataQueue setObject:queue forKey:filePath];
+    [queue release];
+    //为下载任务创建数据缓存
+    NSMutableData *mdata = [[NSMutableData alloc] init];
+    [_mdicReceivedData setObject:mdata forKey:filePath];
+    [mdata release];
+    //
     [self startTaskWithFilePath:filePath andUrl:url];
 }
 

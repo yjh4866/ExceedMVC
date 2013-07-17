@@ -1,9 +1,9 @@
 //
 //  DLConnection.h
+//  BookReader
 //
-//
-//  Created by Jianhong Yang on 13-3-14.
-//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//  Created by CocoaChina_yangjh on 13-3-14.
+//  Copyright (c) 2013年 CocoaChina. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -47,6 +47,10 @@ typedef NS_ENUM(NSUInteger, DownloadStatus) {
 @protocol DLConnectionDelegate <NSObject>
 
 @optional
+
+// 下载项由等待状态变为下载状态
+- (void)dlConnection:(DLConnection *)dlConnection statusChangedWithPath:(NSString *)filePath
+                 url:(NSString *)url andParam:(NSDictionary *)dicParam;
 
 // 下载失败
 - (void)dlConnection:(DLConnection *)dlConnection downloadFailure:(NSError *)error
