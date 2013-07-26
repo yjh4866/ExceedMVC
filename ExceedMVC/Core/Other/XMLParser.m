@@ -9,30 +9,76 @@
 
 #import "XMLParser.h"
 
+#pragma mark - XMLNode
 
-#pragma mark - Implementation XMLNode
+@interface XMLNode () {
+    
+    NSMutableArray *_marrChild;
+}
+
+@end
 
 @implementation XMLNode
-
-@synthesize nodeName = _strNodeName, nodeValue = _strNodeValue;
-@synthesize nodeAttributesDict = _dicAttributes, nodeDepth = _nodeDepth;
 
 #pragma mark Override
 
 - (void)dealloc
 {
-    [_strNodeName release];
-    [_dicAttributes release];
-    [_strNodeValue release];
+    self.nodeName = nil;
+    self.nodeAttributesDict = nil;
+    self.nodeValue = nil;
     _nodeParent = nil;
     
     [super dealloc];
 }
 
+- (NSString *)description
+{
+    if (self.nodeName.length == 0) {
+        return @"";
+    }
+    
+    NSMutableString *mstrDescription = [NSMutableString string];
+    //表示深度的空格字符
+    NSMutableString *mstrSpace = [[NSMutableString alloc] init];
+    for (int i = 0; i < _nodeDepth; i++) {
+        [mstrSpace appendString:@" "];
+    }
+    [mstrDescription appendString:mstrSpace];
+    //结点的名称
+    [mstrDescription appendFormat:@"\r\n%@<%@", mstrSpace, self.nodeName];
+    //结点的属性
+    NSArray *arrayKeys = [self.nodeAttributesDict allKeys];
+    for (NSString *strKey in arrayKeys) {
+        [mstrDescription appendFormat:@" \"%@\"=\"%@\"", strKey, [self.nodeAttributesDict objectForKey:strKey]];
+    }
+    [mstrDescription appendString:@">"];
+    //结点的值
+    if (self.nodeValue.length > 0) {
+        [mstrDescription appendFormat:@"%@", self.nodeValue];
+    }
+    //子结点部分
+    if (_marrChild.count > 0) {
+        //遍历所有子结点
+        for (XMLNode *nodeChild in _marrChild) {
+            //子结点描述串
+            [mstrDescription appendFormat:@"%@", nodeChild];
+        }
+        [mstrDescription appendFormat:@"\r\n%@", mstrSpace];
+    }
+    //结点的结束
+    [mstrDescription appendFormat:@"</%@>", self.nodeName];
+    [mstrSpace release];
+    //
+    return mstrDescription;
+}
+
+#pragma mark Property
+
 - (NSArray *)children
 {
-    if (_arrayChild.count > 0) {
-        return [NSArray arrayWithArray:_arrayChild];
+    if (_marrChild.count > 0) {
+        return [NSArray arrayWithArray:_marrChild];
     }
     else {
         return nil;
@@ -52,76 +98,47 @@
         _nodeDepth = nodeParent.nodeDepth + 1;
     }
     //更新子结点的深度
-    if (_arrayChild.count > 0) {
-        //遍历子结点
-        for (XMLNode *nodeChild in _arrayChild) {
-            //通过设置父结点的方式更新子结点深度
-            nodeChild.nodeParent = self;
-        }
+    for (XMLNode *nodeChild in _marrChild) {
+        //通过设置父结点的方式更新子结点深度
+        nodeChild.nodeParent = self;
     }
-}
-
-- (XMLNode *)nodeParent
-{
-    return _nodeParent;
-}
-
-- (NSString *)description
-{
-    if (_strNodeName.length == 0) {
-        return @"";
-    }
-    
-    NSMutableString *mstrDescription = [NSMutableString string];
-    //表示深度的空格字符
-    NSMutableString *mstrSpace = [[NSMutableString alloc] init];
-    for (int i = 0; i < _nodeDepth; i++) {
-        [mstrSpace appendString:@" "];
-    }
-    [mstrDescription appendString:mstrSpace];
-    //结点的名称
-    [mstrDescription appendFormat:@"\r\n%@<%@", mstrSpace, _strNodeName];
-    //结点的属性
-    NSArray *arrayKeys = [_dicAttributes allKeys];
-    for (NSString *strKey in arrayKeys) {
-        [mstrDescription appendFormat:@" \"%@\"=\"%@\"", strKey, [_dicAttributes objectForKey:strKey]];
-    }
-    [mstrDescription appendString:@">"];
-    //结点的值
-    if (_strNodeValue.length > 0) {
-        [mstrDescription appendFormat:@"%@", _strNodeValue];
-    }
-    //子结点部分
-    if (_arrayChild.count > 0) {
-        //遍历所有子结点
-        for (XMLNode *nodeChild in _arrayChild) {
-            //子结点描述串
-            [mstrDescription appendFormat:@"%@", nodeChild];
-        }
-        [mstrDescription appendFormat:@"\r\n%@", mstrSpace];
-    }
-    //结点的结束
-    [mstrDescription appendFormat:@"</%@>", _strNodeName];
-    [mstrSpace release];
-    //
-    return mstrDescription;
 }
 
 #pragma mark Public
 
-- (void)addChildNode:(XMLNode *)childNode
+// 查询指定名称的结点
+- (NSArray *)findNodesWithNodeName:(NSString *)nodeName
 {
-    if (nil == _arrayChild) {
-        _arrayChild = [NSMutableArray arrayWithCapacity:5];
-    }
+    NSMutableArray *marrNode = [[NSMutableArray alloc] init];
+    NSMutableArray *marray = [NSMutableArray array];
     //
-    [_arrayChild addObject:childNode];
+    [marrNode addObject:self];
+    while (marrNode.count > 0) {
+        //取首结点
+        XMLNode *node = [marrNode objectAtIndex:0];
+        [node retain];
+        [marrNode removeObjectAtIndex:0];
+        //
+        if ([node.nodeName isEqualToString:nodeName]) {
+            [marray addObject:node];
+        }
+        //
+        NSArray *arrayChild = node.children;
+        for (XMLNode *childNode in arrayChild) {
+            [marrNode addObject:childNode];
+        }
+        [node release];
+    }
+    [marrNode release];
+    
+    return marray;
 }
 
+// 清空结点
 - (void)clear
 {
-    NSArray *arrayChild = [self children];
     //遍历所有子结点
+    NSArray *arrayChild = [self children];
     for (XMLNode *node in arrayChild) {
         //清空子结点的数据
         [node clear];
@@ -133,7 +150,18 @@
     self.nodeAttributesDict = nil;
     self.nodeParent = nil;
     //清空子结点表
-    [_arrayChild removeAllObjects];
+    [_marrChild removeAllObjects];
+}
+
+#pragma mark Private
+
+- (void)addChildNode:(XMLNode *)childNode
+{
+    if (nil == _marrChild) {
+        _marrChild = [NSMutableArray arrayWithCapacity:5];
+    }
+    //
+    [_marrChild addObject:childNode];
 }
 
 @end
@@ -146,22 +174,47 @@
     
     XMLNode *_rootNode;
     XMLNode *_currentNode;
+    NSMutableArray *_marrNode;
 }
 
+@property (nonatomic, retain) NSString *nodeName;
+
 - (XMLNode *)parse:(NSData *)dataXML;
+
+- (NSArray *)findXMLNodesWithNodeName:(NSString *)nodeName from:(NSData *)dataXML;
 
 @end
 
 
 
-#pragma mark - Implementation XMLParser
+#pragma mark Implementation XMLParser
 
 @implementation XMLParser
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _marrNode = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    _rootNode = nil;
+    _currentNode = nil;
+    [_marrNode release];
+    self.nodeName = nil;
+    
+    [super dealloc];
+}
 
 - (XMLNode *)parse:(NSData *)dataXML
 {
     _rootNode = nil;
     _currentNode = nil;
+    self.nodeName = nil;
     //
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:dataXML]; //设置XML数据
     [parser setShouldProcessNamespaces:NO];
@@ -172,6 +225,22 @@
     [parser release];
     
     return _rootNode;
+}
+
+- (NSArray *)findXMLNodesWithNodeName:(NSString *)nodeName from:(NSData *)dataXML
+{
+    [_marrNode removeAllObjects];
+    self.nodeName = nodeName;
+    //
+    NSXMLParser *parser = [[NSXMLParser alloc] initWithData:dataXML]; //设置XML数据
+    [parser setShouldProcessNamespaces:NO];
+    [parser setShouldReportNamespacePrefixes:NO];
+    [parser setShouldResolveExternalEntities:NO];
+    [parser setDelegate:self];
+    [parser parse];
+    [parser release];
+    
+    return [NSArray arrayWithArray:_marrNode];
 }
 
 #pragma mark NSXMLParserDelegate
@@ -202,6 +271,10 @@
         [_currentNode addChildNode:nodeChild];
         _currentNode = nodeChild;
         [nodeChild release];
+    }
+    
+    if (self.nodeName.length > 0 && [self.nodeName isEqualToString:elementName]) {
+        [_marrNode addObject:_currentNode];
     }
 }
 
@@ -254,6 +327,14 @@
     return node;
 }
 
+- (NSArray *)findXMLNodesWithNodeName:(NSString *)nodeName
+{
+    XMLParser *parser = [[XMLParser alloc] init];
+    NSArray *xmlNodes = [parser findXMLNodesWithNodeName:nodeName from:self];
+    [parser release];
+    return xmlNodes;
+}
+
 @end
 
 
@@ -263,10 +344,12 @@
 
 - (XMLNode *)xmlNodeWithEncoding:(NSStringEncoding)encoding
 {
-    XMLParser *parser = [[XMLParser alloc] init];
-    XMLNode *node = [parser parse:[self dataUsingEncoding:encoding]];
-    [parser release];
-    return node;
+    return [[self dataUsingEncoding:encoding] xmlNode];
+}
+
+- (NSArray *)findXMLNodesWithNodeName:(NSString *)nodeName encoding:(NSStringEncoding)encoding
+{
+    return [[self dataUsingEncoding:encoding] findXMLNodesWithNodeName:nodeName];
 }
 
 @end

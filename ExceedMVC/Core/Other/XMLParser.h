@@ -12,24 +12,19 @@
 
 #pragma mark - XMLNode
 
-@interface XMLNode : NSObject {
-@private
-    
-    NSString *_strNodeName;//结点名称
-    NSDictionary *_dicAttributes;//结点属性
-    NSMutableArray *_arrayChild;//子结点
-    NSString *_strNodeValue;//结点值
-    NSUInteger _nodeDepth;
-    XMLNode *_nodeParent;//父结点
-}
+@interface XMLNode : NSObject
 
-@property (nonatomic, copy) NSString *nodeName;
-@property (nonatomic, copy) NSDictionary *nodeAttributesDict;
-@property (nonatomic, readonly) NSArray *children;
-@property (nonatomic, copy) NSString *nodeValue;
+@property (nonatomic, copy) NSString *nodeName;//结点名称
+@property (nonatomic, retain) NSDictionary *nodeAttributesDict;//结点属性
+@property (nonatomic, readonly) NSArray *children;//子结点
+@property (nonatomic, copy) NSString *nodeValue;//结点值
 @property (nonatomic, readonly) NSUInteger nodeDepth;
-@property (nonatomic, assign) XMLNode *nodeParent;
+@property (nonatomic, readonly) XMLNode *nodeParent;//父结点
 
+// 查询指定名称的结点
+- (NSArray *)findNodesWithNodeName:(NSString *)nodeName;
+
+// 清空结点
 - (void)clear;
 
 @end
@@ -41,6 +36,8 @@
 
 - (XMLNode *)xmlNode;
 
+- (NSArray *)findXMLNodesWithNodeName:(NSString *)nodeName;
+
 @end
 
 
@@ -49,5 +46,7 @@
 @interface NSString (XMLParser)
 
 - (XMLNode *)xmlNodeWithEncoding:(NSStringEncoding)encoding;
+
+- (NSArray *)findXMLNodesWithNodeName:(NSString *)nodeName encoding:(NSStringEncoding)encoding;
 
 @end

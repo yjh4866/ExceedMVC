@@ -42,6 +42,7 @@
 {
     [super viewDidAppear:animated];
     
+    [UIApplication sharedApplication].statusBarHidden = NO;
     if (self.firstLoadVCs) {
         if ([self.dataSource respondsToSelector:@selector(mainVC:loadViewControllers:)]) {
             NSMutableArray *marrVC = [[NSMutableArray alloc] init];

@@ -199,13 +199,13 @@ typedef NSInteger NetDownloadType;
         //取消正在获取文件大小的
         NSDictionary *dicParam0 = [[NSDictionary alloc] initWithObjectsAndKeys:
                                    [NSNumber numberWithInt:NetDownloadType_FileSize], @"type",
-                                   filePath, @"filePath", url, @"url", nil];
+                                   filePath, @"filepath", url, @"url", nil];
         [_httpDownload cancelRequest:dicParam0];
         [dicParam0 release];
         //取消正在下载的
         NSDictionary *dicParam1 = [[NSDictionary alloc] initWithObjectsAndKeys:
                                    [NSNumber numberWithInt:NetDownloadType_Download], @"type",
-                                   filePath, @"filePath", url, @"url", nil];
+                                   filePath, @"filepath", url, @"url", nil];
         [_httpDownload cancelRequest:dicParam1];
         [dicParam1 release];
         //从等待队列启动其他任务
@@ -281,12 +281,12 @@ typedef NSInteger NetDownloadType;
 // 网络数据下载失败
 - (void)httpConnect:(HTTPConnection *)httpConnect error:(NSError *)error with:(NSDictionary *)dicParam
 {
-    NSString *filePath = [dicParam objectForKey:@"filePath"];
-    NSString *url = [dicParam objectForKey:@"url"];
+    NSDictionary *dicTask = [dicParam objectForKey:@"task"];
+    NSString *filePath = [dicTask objectForKey:@"filepath"];
+    NSString *url = [dicTask objectForKey:@"url"];
     //告知失败
     if ([self.delegate respondsToSelector:@selector(dlConnection:downloadFailure:withPath:url:andParam:)]) {
-        NSDictionary *param = [self getParamWithFilePath:filePath andUrl:url
-                                               fromArray:_marrDownloadItem];
+        NSDictionary *param = [dicTask objectForKey:@"param"];
         [self.delegate dlConnection:self downloadFailure:error
                            withPath:filePath url:url andParam:param];
     }
@@ -307,8 +307,8 @@ typedef NSInteger NetDownloadType;
             //查看文件大小
         case NetDownloadType_FileSize:
         {
-            NSString *filePath = [dicParam objectForKey:@"filePath"];
-            NSString *url = [dicParam objectForKey:@"url"];
+            NSDictionary *dicTask = [dicParam objectForKey:@"task"];
+            NSString *filePath = [dicTask objectForKey:@"filepath"];
             UInt32 fileSize = [[dicAllHeaderFields objectForKey:@"Content-Length"] intValue];
             //将文件大小保存到临时文件尾部
             NSString *tempFilePath = TempFilePath_File(filePath);
@@ -316,11 +316,12 @@ typedef NSInteger NetDownloadType;
             [dataFileSize writeToFile:tempFilePath atomically:YES];
             //通知文件大小
             if ([self.delegate respondsToSelector:@selector(dlConnection:fileSize:withPath:url:andParam:)]) {
-                NSDictionary *param = [self getParamWithFilePath:filePath andUrl:url fromArray:_marrDownloadItem];
+                NSString *url = [dicTask objectForKey:@"url"];
+                NSDictionary *param = [dicTask objectForKey:@"param"];
                 [self.delegate dlConnection:self fileSize:fileSize withPath:filePath url:url andParam:param];
             }
             //启动下载任务
-            [self startTaskWithFilePath:filePath andUrl:url];
+            [self startTask:dicTask];
         }
             break;
         default:
@@ -338,15 +339,16 @@ typedef NSInteger NetDownloadType;
             //文件下载
         case NetDownloadType_Download:
         {
-            NSString *filePath = [dicParam objectForKey:@"filePath"];
-            NSString *url = [dicParam objectForKey:@"url"];
-            NSDictionary *param = [dicParam objectForKey:@"param"];
+            NSDictionary *dicTask = [dicParam objectForKey:@"task"];
+            NSString *filePath = [dicTask objectForKey:@"filepath"];
             //缓存数据
             NSMutableData *mdata = [_mdicReceivedData objectForKey:filePath];
             [mdata appendData:partData];
             //查看Operation队列里是否已经存在该文件的保存任务，无任务则添加任务
             NSOperationQueue *queue = [_mdicSaveDataQueue objectForKey:filePath];
             if (queue.operationCount == 0) {
+                NSString *url = [dicTask objectForKey:@"url"];
+                NSDictionary *param = [dicTask objectForKey:@"param"];
                 //无任务则创建任务
                 SaveFileDataOperation *operation = [[SaveFileDataOperation alloc] init];
                 operation.filePath = filePath;
@@ -379,9 +381,10 @@ typedef NSInteger NetDownloadType;
             //文件下载
         case NetDownloadType_Download:
         {
-            NSString *filePath = [dicParam objectForKey:@"filePath"];
-            NSString *url = [dicParam objectForKey:@"url"];
-            NSDictionary *param = [dicParam objectForKey:@"param"];
+            NSDictionary *dicTask = [dicParam objectForKey:@"task"];
+            NSString *filePath = [dicTask objectForKey:@"filepath"];
+            NSString *url = [dicTask objectForKey:@"url"];
+            NSDictionary *param = [dicTask objectForKey:@"param"];
             //创建结束的Operation
             SaveFileDataOperation *operation = [[SaveFileDataOperation alloc] init];
             operation.filePath = filePath;
@@ -474,11 +477,12 @@ typedef NSInteger NetDownloadType;
     [_marrWaitItem removeObjectAtIndex:0];
     //
     NSString *filePath = [dicTask objectForKey:@"filepath"];
-    NSString *url = [dicTask objectForKey:@"url"];
     //通知下载状态变更
     if ([self.delegate respondsToSelector:@selector(dlConnection:statusChangedWithPath:url:andParam:)]) {
+        NSString *url = [dicTask objectForKey:@"url"];
+        NSDictionary *param = [dicTask objectForKey:@"param"];
         [self.delegate dlConnection:self statusChangedWithPath:filePath
-                                url:url andParam:[dicTask objectForKey:@"param"]];
+                                url:url andParam:param];
     }
     //为下载任务创建Operation队列
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
@@ -490,11 +494,13 @@ typedef NSInteger NetDownloadType;
     [_mdicReceivedData setObject:mdata forKey:filePath];
     [mdata release];
     //
-    [self startTaskWithFilePath:filePath andUrl:url];
+    [self startTask:dicTask];
 }
 
-- (void)startTaskWithFilePath:(NSString *)filePath andUrl:(NSString *)url
+- (void)startTask:(NSDictionary *)dicTask
 {
+    NSString *filePath = [dicTask objectForKey:@"filepath"];
+    NSString *url = [dicTask objectForKey:@"url"];
     NSString *tempFilePath = TempFilePath_File(filePath);
     //如果临时文件不存在则先查看文件大小
     if (![[NSFileManager defaultManager] fileExistsAtPath:tempFilePath]) {
@@ -503,8 +509,7 @@ typedef NSInteger NetDownloadType;
         [mURLRequest setHTTPMethod:@"HEAD"];
         [mURLRequest setURL:[NSURL URLWithString:url]];
         NSDictionary *dicParam = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                  [NSNumber numberWithInt:NetDownloadType_FileSize], @"type",
-                                  filePath, @"filePath", url, @"url", nil];
+                                  [NSNumber numberWithInt:NetDownloadType_FileSize], @"type", dicTask, @"task", nil];
         [_httpDownload requestWebDataWithRequest:mURLRequest andParam:dicParam
                                            cache:NO priority:YES];
         [mURLRequest release];
@@ -522,8 +527,7 @@ typedef NSInteger NetDownloadType;
         [mURLRequest setTimeoutInterval:10.0f];
         //
         NSDictionary *dicParam = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                  [NSNumber numberWithInt:NetDownloadType_Download], @"type",
-                                  filePath, @"filePath", url, @"url", nil];
+                                  [NSNumber numberWithInt:NetDownloadType_Download], @"type", dicTask, @"task", nil];
         [_httpDownload requestWebDataWithRequest:mURLRequest andParam:dicParam
                                            cache:NO priority:YES];
         [mURLRequest release];

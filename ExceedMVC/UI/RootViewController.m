@@ -35,6 +35,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    [UIApplication sharedApplication].statusBarHidden = YES;
     //下面这段代码可以注释掉看一下效果 
     if (nil == _imageViewBG) {
         _imageViewBG = [[UIImageView alloc] initWithFrame:self.view.bounds];
