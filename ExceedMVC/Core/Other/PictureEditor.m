@@ -161,7 +161,7 @@
 // 从UIView上截屏
 + (UIImage *)screenshotFromView:(UIView *)view
 {
-    UIGraphicsBeginImageContext(view.bounds.size);
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0f);
     CGContextRef context = UIGraphicsGetCurrentContext();
     [view.layer renderInContext:context];
     //取图片
