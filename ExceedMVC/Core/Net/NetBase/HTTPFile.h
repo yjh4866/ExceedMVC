@@ -18,6 +18,7 @@ typedef NS_ENUM(unsigned int, DownloadStatus) {
 
 @interface HTTPFile : NSObject
 
+@property (nonatomic, assign) unsigned int sizePartFile;  // 默认256*1024，最小值为4*1024
 @property (nonatomic, assign) id <HTTPFileDelegate> delegate;
 
 // 文件下载状态

@@ -34,6 +34,7 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
 {
     self = [super init];
     if (self) {
+        self.sizePartFile = 256*1024;
         _httpDownload = [[HTTPConnection alloc] init];
         _httpDownload.delegate = self;
         //
@@ -301,7 +302,10 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
                            withPath:filePath andParam:dicParam[@"param"]];
             // 生成任务项列表
             NSMutableArray *marrTaskItem = [NSMutableArray array];
-            unsigned int taskItemCount = ceilf(1.0f*fileSize/(256*1024)); // 每一个任务项大小256K左右
+            if (self.sizePartFile < 4*1024) {
+                self.sizePartFile = 4*1024;
+            }
+            unsigned int taskItemCount = ceilf(1.0f*fileSize/self.sizePartFile); // 每一个任务项大小
             unsigned int taskItemLen = fileSize/taskItemCount;
             for (int i = 0; i < taskItemCount-1; i++) {
                 [marrTaskItem addObject:@{@"Start": @(i*taskItemLen), @"Len": @(taskItemLen)}];
