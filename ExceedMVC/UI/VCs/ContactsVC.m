@@ -35,7 +35,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+    self.view.backgroundColor = [UIColor whiteColor];
+    // Do any additional setup after loading the view.
+    if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
     
     if (nil == _tableView) {
         _tableView = [[UITableView alloc] initWithFrame:self.view.bounds

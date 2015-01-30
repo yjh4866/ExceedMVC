@@ -364,8 +364,8 @@
         }
     }
     [UIApplication sharedApplication].networkActivityIndicatorVisible = self.numberOfURLConnection>0;
-    HTTPLog(@"正在处理的网络请求数：%i，等待处理的网络请求：%i", 
-            self.numberOfURLConnection, _marrayTaskDic.count-self.numberOfURLConnection);
+    HTTPLog(@"正在处理的网络请求数：%@，等待处理的网络请求：%@",
+            @(self.numberOfURLConnection), @(_marrayTaskDic.count-self.numberOfURLConnection));
 }
 
 @end

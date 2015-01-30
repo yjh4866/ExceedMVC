@@ -27,7 +27,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+    self.view.backgroundColor = [UIColor whiteColor];
+    // Do any additional setup after loading the view.
+    if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
     
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"用户资料" style:UIBarButtonItemStylePlain target:self action:@selector(clickInfo:)];
     self.navigationItem.rightBarButtonItem = rightItem;

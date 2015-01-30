@@ -34,7 +34,6 @@
 		B115E3A81760C07700F31423 /* CoreEngine+Send.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3A71760C07700F31423 /* CoreEngine+Send.m */; };
 		B115E3AB1760C07700F31423 /* CoreEngine+Update.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3AA1760C07700F31423 /* CoreEngine+Update.m */; };
 		B115E3B01760C07700F31423 /* HTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3AF1760C07700F31423 /* HTTPConnection.m */; };
-		B115E3B31760C07700F31423 /* DLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3B21760C07700F31423 /* DLConnection.m */; };
 		B115E3B61760C07700F31423 /* NetController.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3B51760C07700F31423 /* NetController.m */; };
 		B115E3BA1760C07700F31423 /* FileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3B91760C07700F31423 /* FileManager.m */; };
 		B115E3BE1760C07700F31423 /* ContactsMan.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3BD1760C07700F31423 /* ContactsMan.m */; };
@@ -46,7 +45,6 @@
 		B115E3D01760C07800F31423 /* UIDevice+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3CF1760C07800F31423 /* UIDevice+Custom.m */; };
 		B115E3D31760C07800F31423 /* XMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3D21760C07800F31423 /* XMLParser.m */; };
 		B115E3D81760C07800F31423 /* UIEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3D71760C07800F31423 /* UIEngine.m */; };
-		B115E3DC1760C07800F31423 /* EGORefreshTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3DB1760C07800F31423 /* EGORefreshTableHeaderView.m */; };
 		B115E3DF1760C07800F31423 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3DE1760C07800F31423 /* MBProgressHUD.m */; };
 		B115E3E31760C07800F31423 /* NSString+AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3E21760C07800F31423 /* NSString+AlertView.m */; };
 		B115E3E61760C07800F31423 /* UICustomProgressBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3E51760C07800F31423 /* UICustomProgressBar.m */; };
@@ -69,6 +67,7 @@
 		B1756D8617621B6E00C270E4 /* CoreEngine+AppSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756D8517621B6E00C270E4 /* CoreEngine+AppSetting.m */; };
 		B1756D8917621B7E00C270E4 /* CoreEngine+FileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756D8817621B7E00C270E4 /* CoreEngine+FileManager.m */; };
 		B1756E361762215B00C270E4 /* AboutVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756E351762215B00C270E4 /* AboutVC.m */; };
+		FF14A6F41A7B54D5006EFF29 /* HTTPFile.m in Sources */ = {isa = PBXBuildFile; fileRef = FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -117,8 +116,6 @@
 		B115E3AA1760C07700F31423 /* CoreEngine+Update.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CoreEngine+Update.m"; path = "Core/Engine/CoreEngine+Update.m"; sourceTree = "<group>"; };
 		B115E3AE1760C07700F31423 /* HTTPConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HTTPConnection.h; path = Core/Net/NetBase/HTTPConnection.h; sourceTree = "<group>"; };
 		B115E3AF1760C07700F31423 /* HTTPConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HTTPConnection.m; path = Core/Net/NetBase/HTTPConnection.m; sourceTree = "<group>"; };
-		B115E3B11760C07700F31423 /* DLConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DLConnection.h; path = Core/Net/NetBase/DLConnection.h; sourceTree = "<group>"; };
-		B115E3B21760C07700F31423 /* DLConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DLConnection.m; path = Core/Net/NetBase/DLConnection.m; sourceTree = "<group>"; };
 		B115E3B41760C07700F31423 /* NetController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NetController.h; path = Core/Net/NetController.h; sourceTree = "<group>"; };
 		B115E3B51760C07700F31423 /* NetController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = NetController.m; path = Core/Net/NetController.m; sourceTree = "<group>"; };
 		B115E3B81760C07700F31423 /* FileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FileManager.h; path = Core/FileManager/FileManager.h; sourceTree = "<group>"; };
@@ -141,8 +138,6 @@
 		B115E3D21760C07800F31423 /* XMLParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = XMLParser.m; path = Core/Other/XMLParser.m; sourceTree = "<group>"; };
 		B115E3D61760C07800F31423 /* UIEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIEngine.h; path = UI/Engine/UIEngine.h; sourceTree = "<group>"; };
 		B115E3D71760C07800F31423 /* UIEngine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIEngine.m; path = UI/Engine/UIEngine.m; sourceTree = "<group>"; };
-		B115E3DA1760C07800F31423 /* EGORefreshTableHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EGORefreshTableHeaderView.h; path = UI/OtherViews/EGORefreshTableHeaderView.h; sourceTree = "<group>"; };
-		B115E3DB1760C07800F31423 /* EGORefreshTableHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EGORefreshTableHeaderView.m; path = UI/OtherViews/EGORefreshTableHeaderView.m; sourceTree = "<group>"; };
 		B115E3DD1760C07800F31423 /* MBProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = UI/OtherViews/MBProgressHUD.h; sourceTree = "<group>"; };
 		B115E3DE1760C07800F31423 /* MBProgressHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = UI/OtherViews/MBProgressHUD.m; sourceTree = "<group>"; };
 		B115E3E01760C07800F31423 /* NSObject+ActivityAlertView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSObject+ActivityAlertView.h"; path = "UI/OtherViews/NSObject+ActivityAlertView.h"; sourceTree = "<group>"; };
@@ -188,6 +183,8 @@
 		B1756D8817621B7E00C270E4 /* CoreEngine+FileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CoreEngine+FileManager.m"; path = "Core/Engine/CoreEngine+FileManager.m"; sourceTree = "<group>"; };
 		B1756E341762215B00C270E4 /* AboutVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutVC.h; sourceTree = "<group>"; };
 		B1756E351762215B00C270E4 /* AboutVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutVC.m; sourceTree = "<group>"; };
+		FF14A6F21A7B54D5006EFF29 /* HTTPFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPFile.h; path = Core/Net/NetBase/HTTPFile.h; sourceTree = "<group>"; };
+		FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPFile.m; path = Core/Net/NetBase/HTTPFile.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -354,10 +351,10 @@
 		B115E3AD1760C07700F31423 /* NetBase */ = {
 			isa = PBXGroup;
 			children = (
+				FF14A6F21A7B54D5006EFF29 /* HTTPFile.h */,
+				FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */,
 				B115E3AE1760C07700F31423 /* HTTPConnection.h */,
 				B115E3AF1760C07700F31423 /* HTTPConnection.m */,
-				B115E3B11760C07700F31423 /* DLConnection.h */,
-				B115E3B21760C07700F31423 /* DLConnection.m */,
 			);
 			name = NetBase;
 			sourceTree = "<group>";
@@ -423,8 +420,6 @@
 		B115E3D91760C07800F31423 /* OtherViews */ = {
 			isa = PBXGroup;
 			children = (
-				B115E3DA1760C07800F31423 /* EGORefreshTableHeaderView.h */,
-				B115E3DB1760C07800F31423 /* EGORefreshTableHeaderView.m */,
 				B115E3DD1760C07800F31423 /* MBProgressHUD.h */,
 				B115E3DE1760C07800F31423 /* MBProgressHUD.m */,
 				B115E3E01760C07800F31423 /* NSObject+ActivityAlertView.h */,
@@ -557,9 +552,9 @@
 				B115E3A81760C07700F31423 /* CoreEngine+Send.m in Sources */,
 				B115E3AB1760C07700F31423 /* CoreEngine+Update.m in Sources */,
 				B115E3B01760C07700F31423 /* HTTPConnection.m in Sources */,
-				B115E3B31760C07700F31423 /* DLConnection.m in Sources */,
 				B115E3B61760C07700F31423 /* NetController.m in Sources */,
 				B115E3BA1760C07700F31423 /* FileManager.m in Sources */,
+				FF14A6F41A7B54D5006EFF29 /* HTTPFile.m in Sources */,
 				B115E3BE1760C07700F31423 /* ContactsMan.m in Sources */,
 				B115E3C11760C07700F31423 /* JSONKit.m in Sources */,
 				B115E3C41760C07700F31423 /* NSString+Tool.m in Sources */,
@@ -569,7 +564,6 @@
 				B115E3D01760C07800F31423 /* UIDevice+Custom.m in Sources */,
 				B115E3D31760C07800F31423 /* XMLParser.m in Sources */,
 				B115E3D81760C07800F31423 /* UIEngine.m in Sources */,
-				B115E3DC1760C07800F31423 /* EGORefreshTableHeaderView.m in Sources */,
 				B115E3DF1760C07800F31423 /* MBProgressHUD.m in Sources */,
 				B115E3E31760C07800F31423 /* NSString+AlertView.m in Sources */,
 				B115E3E61760C07800F31423 /* UICustomProgressBar.m in Sources */,
