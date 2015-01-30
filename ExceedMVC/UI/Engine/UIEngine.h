@@ -32,11 +32,4 @@ ContactInfoVCDataSource, ContactInfoVCDelegate, LoginVCDelegate, AboutVCDelegate
 @property (nonatomic, readonly) UIViewController *rootViewController;
 @property (nonatomic, retain) CoreEngine *engineCore;
 
-// 在parentViewController上叠加viewController
-- (void)showViewController:(UIViewController *)viewController
-          onViewController:(UIViewController *)parentViewController;
-
-// 从parentViewController上移除viewController
-- (void)removeViewController:(UIViewController *)viewController;
-
 @end

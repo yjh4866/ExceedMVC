@@ -110,9 +110,7 @@
 {
     AboutVC *aboutVC = [[AboutVC alloc] init];
     aboutVC.delegate = self;
-    UINavigationController *navAbout = [[UINavigationController alloc] initWithRootViewController:aboutVC];
-    [self showViewController:navAbout onViewController:moreVC.navigationController.tabBarController];
-    [navAbout release];
+    [moreVC.navigationController pushViewController:aboutVC animated:YES];
     [aboutVC release];
 }
 

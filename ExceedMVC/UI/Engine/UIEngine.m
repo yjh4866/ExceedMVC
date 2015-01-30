@@ -11,18 +11,10 @@
 #import "PictureEditor.h"
 #import "CoreEngine+DB.h"
 #import "CoreEngine+Send.h"
-#import "FileManager.h"
-#import "FileManager+Picture.h"
-
-#define AnimationID_ShowViewController        @"AnimationID_ShowViewController"
-#define AnimationID_RemoveViewController      @"AnimationID_RemoveViewController"
 
 @interface UIEngine () {
     
     RootViewController *_rootViewController;
-    UIViewController *_parentViewController;
-    UIViewController *_childViewController;
-    UIImageView *_imageViewChild;
 }
 
 @end
@@ -39,8 +31,6 @@
         //
         _rootViewController = [[RootViewController alloc] init];
         _rootViewController.delegate = self;
-        
-        _imageViewChild = [[UIImageView alloc] init];
         UILOG(@"创建UIEngine");
     }
     return self;
@@ -48,74 +38,15 @@
 
 - (void)dealloc
 {
-    //
     [_rootViewController release];
-    [_parentViewController release];
-    [_childViewController release];
-    [_imageViewChild release];
     //
-    [_engineCore release];
+    self.engineCore = nil;
     
     [super dealloc];
 }
 
 
 #pragma mark - Public
-
-// 在parentViewController上叠加viewController
-- (void)showViewController:(UIViewController *)viewController
-          onViewController:(UIViewController *)parentViewController
-{
-    if (_childViewController) {
-        return;
-    }
-    _childViewController = [viewController retain];
-    _parentViewController = [parentViewController retain];
-    //截屏
-    @autoreleasepool {
-        UIImage *screenshot = [PictureEditor screenshotFromView:_childViewController.view];
-        _imageViewChild.image = screenshot;
-        _imageViewChild.frame = CGRectMake(screenshot.size.width, 0.0f,
-                                           screenshot.size.width, screenshot.size.height);
-        [_parentViewController.view addSubview:_imageViewChild];
-        [UIView beginAnimations:AnimationID_ShowViewController context:nil];
-        [UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
-        [UIView setAnimationDelegate:self];
-        _imageViewChild.frame = CGRectMake(0.0f, 0.0f, screenshot.size.width, screenshot.size.height);
-        [UIView commitAnimations];
-    }
-}
-
-// 从parentViewController上移除viewController
-- (void)removeViewController:(UIViewController *)viewController
-{
-    if (_childViewController) {
-        return;
-    }
-    _childViewController = [viewController retain];
-    //可以移除viewController了
-    if ([UIDevice systemVersionID] < __IPHONE_5_0) {
-        _parentViewController = [_childViewController.parentViewController retain];
-        [_parentViewController dismissModalViewControllerAnimated:NO];
-    }
-    else {
-        _parentViewController = [_childViewController.presentingViewController retain];
-        [_parentViewController dismissViewControllerAnimated:NO completion:nil];
-    }
-    //截屏
-    @autoreleasepool {
-        UIImage *screenshot = [PictureEditor screenshotFromView:_childViewController.view];
-        _imageViewChild.image = screenshot;
-        _imageViewChild.frame = CGRectMake(0.0f, 0.0f, screenshot.size.width, screenshot.size.height);
-        [_parentViewController.view addSubview:_imageViewChild];
-        [UIView beginAnimations:AnimationID_RemoveViewController context:nil];
-        [UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
-        [UIView setAnimationDelegate:self];
-        _imageViewChild.frame = CGRectMake(screenshot.size.width, 0.0f,
-                                           screenshot.size.width, screenshot.size.height);
-        [UIView commitAnimations];
-    }
-}
 
 
 #pragma mark - RootVCDelegate
@@ -241,36 +172,10 @@
 
 - (void)aboutVCClose:(AboutVC *)aboutVC
 {
-    [self removeViewController:aboutVC];
+    [aboutVC.navigationController popViewControllerAnimated:YES];
 }
 
 
 #pragma mark - Private
-
-- (void)animationDidStop:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context
-{
-    if ([animationID isEqualToString:AnimationID_ShowViewController]) {
-        [_imageViewChild removeFromSuperview];
-        //
-        if ([UIDevice systemVersionID] < __IPHONE_5_0) {
-            [_parentViewController presentModalViewController:_childViewController animated:NO];
-        }
-        else {
-            [_parentViewController presentViewController:_childViewController animated:NO completion:nil];
-        }
-        [_childViewController release];
-        _childViewController = nil;
-        [_parentViewController release];
-        _parentViewController = nil;
-    }
-    else if ([animationID isEqualToString:AnimationID_RemoveViewController]) {
-        [_imageViewChild removeFromSuperview];
-        //
-        [_childViewController release];
-        _childViewController = nil;
-        [_parentViewController release];
-        _parentViewController = nil;
-    }
-}
 
 @end
