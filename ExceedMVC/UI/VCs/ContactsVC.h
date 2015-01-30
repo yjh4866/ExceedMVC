@@ -26,18 +26,12 @@
 // 加载已有联系人
 - (void)contactsVC:(ContactsVC *)contactsVC loadContacts:(NSMutableArray *)marray;
 
-// 加载指定url的头像
-- (UIImage *)contactsVC:(ContactsVC *)contactsVC pictureWithUrl:(NSString *)url;
-
 @end
 
 
 @protocol ContactsVCDelegate <NSObject>
 
 @optional
-
-// 下载指定url的头像
-- (void)contactsVC:(ContactsVC *)contactsVC downloadAvatarWithUrl:(NSString *)url;
 
 // 进入用户详细资料页面
 - (void)contactsVC:(ContactsVC *)contactsVC showContactsInfo:(UInt64)userID;

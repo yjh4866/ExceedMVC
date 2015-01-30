@@ -14,6 +14,9 @@
 #endif
 
 
+#import "UIImageView+Cache.h"
+
+
 
 #ifdef DEBUG
 

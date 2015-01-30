@@ -84,7 +84,7 @@
     sqlite3_bind_int64(_stmt, index, value);
 }
 - (void)bindData:(NSData*)value forIndex:(int)index {
-    sqlite3_bind_blob(_stmt, index, value.bytes, value.length, SQLITE_TRANSIENT);
+    sqlite3_bind_blob(_stmt, index, value.bytes, (int)value.length, SQLITE_TRANSIENT);
 }
 - (void)bindBool:(BOOL)value forIndex:(int)index {
 	sqlite3_bind_int(_stmt, index, value?1:0);

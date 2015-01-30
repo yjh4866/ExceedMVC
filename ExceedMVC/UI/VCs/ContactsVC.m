@@ -51,10 +51,6 @@
     
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter removeObserver:self];
-    [defaultCenter addObserver:self selector:@selector(notifDownloadFileFailure:)
-                          name:NetDownloadFileFailure object:nil];
-    [defaultCenter addObserver:self selector:@selector(notifDownloadFileSuccess:)
-                          name:NetDownloadFileSuccess object:nil];
     [defaultCenter addObserver:self selector:@selector(notifUserInfoSuccess:)
                           name:NetUserInfoSuccess object:nil];
     
@@ -83,22 +79,6 @@
 
 
 #pragma mark - Notification
-
-- (void)notifDownloadFileFailure:(NSNotification *)notif
-{
-    //下载失败...
-}
-
-- (void)notifDownloadFileSuccess:(NSNotification *)notif
-{
-    NSString *url = [notif.userInfo objectForKey:@"url"];
-    for (UserInfo *friendInfo in _marrFriend) {
-        if ([friendInfo.avatarUrl isEqualToString:url]) {
-            [_tableView reloadData];
-            break;
-        }
-    }
-}
 
 - (void)notifUserInfoSuccess:(NSNotification *)notif
 {
@@ -134,20 +114,13 @@
     //
     UserInfo *friendInfo = [_marrFriend objectAtIndex:indexPath.row];
     cell.textLabel.text = friendInfo.userName;
-    //
-    if ([self.dataSource respondsToSelector:@selector(contactsVC:pictureWithUrl:)]) {
-        @autoreleasepool {
-            //读头像
-            cell.imageView.image = [self.dataSource contactsVC:self
-                                             pictureWithUrl:friendInfo.avatarUrl];
-            //没读到头像则下载
-            if (nil == cell.imageView.image) {
-                if ([self.delegate respondsToSelector:@selector(contactsVC:downloadAvatarWithUrl:)]) {
-                    [self.delegate contactsVC:self downloadAvatarWithUrl:friendInfo.avatarUrl];
-                }
-            }
+    // 显示头像
+    [cell.imageView loadImageFromCachePath:nil orPicUrl:friendInfo.avatarUrl withDownloadResult:^(UIImageView *imageView, NSString *picUrl, NSError *error) {
+        // error为nil表示下载成功
+        if (nil == error) {
+            [_tableView reloadData];
         }
-    }
+    }];
     
     return cell;
 }

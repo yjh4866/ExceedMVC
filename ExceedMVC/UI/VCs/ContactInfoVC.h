@@ -31,10 +31,6 @@
 - (void)contactInfoVC:(ContactInfoVC *)contactInfoVC
          loadUserInfo:(UserInfo *)userInfo;
 
-// 加载指定url的头像
-- (UIImage *)contactInfoVC:(ContactInfoVC *)contactInfoVC
-            pictureWithUrl:(NSString *)url;
-
 @end
 
 
@@ -44,9 +40,5 @@
 
 // 更新用户资料
 - (void)contactInfoVCGetUserInfo:(ContactInfoVC *)contactInfoVC;
-
-// 下载指定url的头像
-- (void)contactInfoVC:(ContactInfoVC *)contactInfoVC
-downloadAvatarWithUrl:(NSString *)url;
 
 @end

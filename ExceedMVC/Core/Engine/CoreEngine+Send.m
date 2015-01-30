@@ -18,13 +18,6 @@
     [_netController loginWithUserName:userName andPassword:password];
 }
 
-// 下载指定url的图片
-- (void)downloadPictureWithUrl:(NSString *)picUrl
-{
-    NSString *filePath = [FileManager picturePathOfUrl:picUrl];
-    [_netController downloadFile:filePath withUrl:picUrl];
-}
-
 // 获取指定用户资料
 - (void)getUserInfoOf:(UInt64)userID
 {

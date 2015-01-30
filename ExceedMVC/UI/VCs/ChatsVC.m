@@ -48,19 +48,12 @@
     }
     [self.view addSubview:_tableView];
     
-    //假设有很多数据需要加载
-    sleep(2);
-    
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter removeObserver:self];
-    [defaultCenter addObserver:self selector:@selector(notifDownloadFileFailure:)
-                          name:NetDownloadFileFailure object:nil];
-    [defaultCenter addObserver:self selector:@selector(notifDownloadFileSuccess:)
-                          name:NetDownloadFileSuccess object:nil];
     [defaultCenter addObserver:self selector:@selector(notifUserInfoSuccess:)
                           name:NetUserInfoSuccess object:nil];
     
-    //读取本地会话纪录
+    // 读取本地会话纪录
     if ([self.dataSource respondsToSelector:@selector(chatsVC:loadChats:)]) {
         [_marrChat removeAllObjects];
         [self.dataSource chatsVC:self loadChats:_marrChat];
@@ -93,22 +86,6 @@
 
 
 #pragma mark - Notification
-
-- (void)notifDownloadFileFailure:(NSNotification *)notif
-{
-    //下载失败...
-}
-
-- (void)notifDownloadFileSuccess:(NSNotification *)notif
-{
-    NSString *url = [notif.userInfo objectForKey:@"url"];
-    for (ChatsItem *chatsItem in _marrChat) {
-        if ([chatsItem.avatarUrl isEqualToString:url]) {
-            [_tableView reloadData];
-            break;
-        }
-    }
-}
 
 - (void)notifUserInfoSuccess:(NSNotification *)notif
 {
@@ -145,20 +122,13 @@
     ChatsItem *chatsItem = [_marrChat objectAtIndex:indexPath.row];
     cell.textLabel.text = chatsItem.userName;
     cell.detailTextLabel.text = chatsItem.latestMsg;
-    //
-    if ([self.dataSource respondsToSelector:@selector(chatsVC:pictureWithUrl:)]) {
-        @autoreleasepool {
-            //读头像 
-            cell.imageView.image = [self.dataSource chatsVC:self
-                                             pictureWithUrl:chatsItem.avatarUrl];
-            //没读到头像则下载
-            if (nil == cell.imageView.image) {
-                if ([self.delegate respondsToSelector:@selector(chatsVC:downloadAvatarWithUrl:)]) {
-                    [self.delegate chatsVC:self downloadAvatarWithUrl:chatsItem.avatarUrl];
-                }
-            }
+    // 显示头像
+    [cell.imageView loadImageFromCachePath:nil orPicUrl:chatsItem.avatarUrl withDownloadResult:^(UIImageView *imageView, NSString *picUrl, NSError *error) {
+        // error为nil表示下载成功
+        if (nil == error) {
+            [_tableView reloadData];
         }
-    }
+    }];
     
     return cell;
 }

@@ -188,13 +188,6 @@
     //加载已有资料
 }
 
-// 加载指定url的头像
-- (UIImage *)contactInfoVC:(ContactInfoVC *)contactInfoVC
-            pictureWithUrl:(NSString *)url
-{
-    return [FileManager pictureOfUrl:url];
-}
-
 
 #pragma mark - ContactInfoVCDelegate
 
@@ -202,13 +195,6 @@
 - (void)contactInfoVCGetUserInfo:(ContactInfoVC *)contactInfoVC
 {
     [self.engineCore getUserInfoOf:contactInfoVC.userID];
-}
-
-// 下载指定url的头像
-- (void)contactInfoVC:(ContactInfoVC *)contactInfoVC
-downloadAvatarWithUrl:(NSString *)url
-{
-    [self.engineCore downloadPictureWithUrl:url];
 }
 
 

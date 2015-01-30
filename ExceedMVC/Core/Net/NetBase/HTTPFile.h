@@ -2,7 +2,7 @@
 //  HTTPFile.h
 //  
 //
-//  Created by CocoaChina_yangjh on 13-3-14.
+//  Created by yangjh on 13-3-14.
 //  Copyright (c) 2015年 __MyCompanyName__. All rights reserved.
 //
 

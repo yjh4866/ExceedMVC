@@ -64,20 +64,8 @@
     [self.engineCore loadChats:marrChat];
 }
 
-// 加载指定url的图片
-- (UIImage *)chatsVC:(ChatsVC *)chatsVC pictureWithUrl:(NSString *)url
-{
-    return [FileManager pictureOfUrl:url];
-}
-
 
 #pragma mark - ChatsVCDelegate
-
-// 下载指定url的头像
-- (void)chatsVC:(ChatsVC *)chatsVC downloadAvatarWithUrl:(NSString *)url
-{
-    [self.engineCore downloadPictureWithUrl:url];
-}
 
 // 进入聊天页面
 - (void)chatsVC:(ChatsVC *)chatsVC chatWithFriend:(UInt64)friendID
@@ -99,20 +87,8 @@
     [self.engineCore loadContacts:marray];
 }
 
-// 加载指定url的头像
-- (UIImage *)contactsVC:(ContactsVC *)contactsVC pictureWithUrl:(NSString *)url
-{
-    return [FileManager pictureOfUrl:url];
-}
-
 
 #pragma mark - ContactsVCDelegate
-
-// 下载指定url的头像
-- (void)contactsVC:(ContactsVC *)contactsVC downloadAvatarWithUrl:(NSString *)url
-{
-    [self.engineCore downloadPictureWithUrl:url];
-}
 
 // 进入用户详细资料页面
 - (void)contactsVC:(ContactsVC *)contactsVC showContactsInfo:(UInt64)userID

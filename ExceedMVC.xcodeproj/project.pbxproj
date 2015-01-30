@@ -68,6 +68,7 @@
 		B1756D8917621B7E00C270E4 /* CoreEngine+FileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756D8817621B7E00C270E4 /* CoreEngine+FileManager.m */; };
 		B1756E361762215B00C270E4 /* AboutVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756E351762215B00C270E4 /* AboutVC.m */; };
 		FF14A6F41A7B54D5006EFF29 /* HTTPFile.m in Sources */ = {isa = PBXBuildFile; fileRef = FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */; };
+		FF14A6F71A7B583F006EFF29 /* UIImageView+Cache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF14A6F61A7B583F006EFF29 /* UIImageView+Cache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -185,6 +186,8 @@
 		B1756E351762215B00C270E4 /* AboutVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutVC.m; sourceTree = "<group>"; };
 		FF14A6F21A7B54D5006EFF29 /* HTTPFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPFile.h; path = Core/Net/NetBase/HTTPFile.h; sourceTree = "<group>"; };
 		FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPFile.m; path = Core/Net/NetBase/HTTPFile.m; sourceTree = "<group>"; };
+		FF14A6F51A7B583F006EFF29 /* UIImageView+Cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImageView+Cache.h"; path = "UI/OtherViews/UIImageView+Cache.h"; sourceTree = "<group>"; };
+		FF14A6F61A7B583F006EFF29 /* UIImageView+Cache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+Cache.m"; path = "UI/OtherViews/UIImageView+Cache.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -351,10 +354,10 @@
 		B115E3AD1760C07700F31423 /* NetBase */ = {
 			isa = PBXGroup;
 			children = (
-				FF14A6F21A7B54D5006EFF29 /* HTTPFile.h */,
-				FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */,
 				B115E3AE1760C07700F31423 /* HTTPConnection.h */,
 				B115E3AF1760C07700F31423 /* HTTPConnection.m */,
+				FF14A6F21A7B54D5006EFF29 /* HTTPFile.h */,
+				FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */,
 			);
 			name = NetBase;
 			sourceTree = "<group>";
@@ -420,6 +423,8 @@
 		B115E3D91760C07800F31423 /* OtherViews */ = {
 			isa = PBXGroup;
 			children = (
+				FF14A6F51A7B583F006EFF29 /* UIImageView+Cache.h */,
+				FF14A6F61A7B583F006EFF29 /* UIImageView+Cache.m */,
 				B115E3DD1760C07800F31423 /* MBProgressHUD.h */,
 				B115E3DE1760C07800F31423 /* MBProgressHUD.m */,
 				B115E3E01760C07800F31423 /* NSObject+ActivityAlertView.h */,
@@ -562,6 +567,7 @@
 				B115E3CA1760C07700F31423 /* PinyinQuery.m in Sources */,
 				B115E3CD1760C07800F31423 /* Reachability.m in Sources */,
 				B115E3D01760C07800F31423 /* UIDevice+Custom.m in Sources */,
+				FF14A6F71A7B583F006EFF29 /* UIImageView+Cache.m in Sources */,
 				B115E3D31760C07800F31423 /* XMLParser.m in Sources */,
 				B115E3D81760C07800F31423 /* UIEngine.m in Sources */,
 				B115E3DF1760C07800F31423 /* MBProgressHUD.m in Sources */,

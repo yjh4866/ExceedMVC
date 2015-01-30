@@ -26,18 +26,12 @@
 // 加载会话列表
 - (void)chatsVC:(ChatsVC *)chatsVC loadChats:(NSMutableArray *)marrChat;
 
-// 加载指定url的头像
-- (UIImage *)chatsVC:(ChatsVC *)chatsVC pictureWithUrl:(NSString *)url;
-
 @end
 
 
 @protocol ChatsVCDelegate <NSObject>
 
 @optional
-
-// 下载指定url的头像
-- (void)chatsVC:(ChatsVC *)chatsVC downloadAvatarWithUrl:(NSString *)url;
 
 // 进入聊天页面
 - (void)chatsVC:(ChatsVC *)chatsVC chatWithFriend:(UInt64)friendID;

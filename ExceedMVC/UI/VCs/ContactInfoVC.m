@@ -50,14 +50,11 @@
         _imageViewAvatar.backgroundColor = [UIColor lightGrayColor];
     }
     [self.view addSubview:_imageViewAvatar];
-    //这里就不读已经有头像了
     
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter removeObserver:self];
     [defaultCenter addObserver:self selector:@selector(notifUserInfoSuccess:)
                           name:NetUserInfoSuccess object:nil];
-    [defaultCenter addObserver:self selector:@selector(notifDownloadFileSuccess:)
-                          name:NetDownloadFileSuccess object:nil];
     
     if ([self.dataSource respondsToSelector:@selector(contactInfoVC:loadUserInfo:)]) {
         [self.dataSource contactInfoVC:self loadUserInfo:_userInfo];
@@ -92,31 +89,9 @@
     //
     if (self.userID == userID) {
         self.title = userName;
-        //加载头像
-        if ([self.dataSource respondsToSelector:@selector(contactInfoVC:pictureWithUrl:)]) {
-            @autoreleasepool {
-                _userInfo.avatarUrl = [notif.userInfo objectForKey:@"avatar"];
-                _imageViewAvatar.image = [self.dataSource contactInfoVC:self pictureWithUrl:_userInfo.avatarUrl];
-                //
-                if (nil == _imageViewAvatar.image) {
-                    [self.delegate contactInfoVC:self
-                           downloadAvatarWithUrl:_userInfo.avatarUrl];
-                }
-            }
-        }
-    }
-}
-
-- (void)notifDownloadFileSuccess:(NSNotification *)notif
-{
-    NSString *url = [notif.userInfo objectForKey:@"url"];
-    //
-    if ([_userInfo.avatarUrl isEqualToString:url]) {
-        if ([self.dataSource respondsToSelector:@selector(contactInfoVC:pictureWithUrl:)]) {
-            @autoreleasepool {
-                _imageViewAvatar.image = [self.dataSource contactInfoVC:self pictureWithUrl:_userInfo.avatarUrl];
-            }
-        }
+        // 显示头像
+        _userInfo.avatarUrl = [notif.userInfo objectForKey:@"avatar"];
+        [_imageViewAvatar loadImageFromCachePath:nil orPicUrl:_userInfo.avatarUrl];
     }
 }
 

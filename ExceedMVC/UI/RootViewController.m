@@ -40,10 +40,10 @@
     if (nil == _imageViewBG) {
         _imageViewBG = [[UIImageView alloc] initWithFrame:self.view.bounds];
         if (IsIphone5()) {
-            SetImageForImageView(_imageViewBG, @"Default-568h@2x");
+            _imageViewBG.image = [UIImage imageNamed:@"Default-568h"];
         }
         else {
-            SetImageForImageView(_imageViewBG, @"Default@2x");
+            _imageViewBG.image = [UIImage imageNamed:@"Default"];
         }
     }
     [self.view addSubview:_imageViewBG];
