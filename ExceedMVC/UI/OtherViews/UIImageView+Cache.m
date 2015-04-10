@@ -1,9 +1,9 @@
 //
-//  UIImageView+CSCache.m
+//  UIImageView+Cache.m
 //
 //
-//  Created by yangjh on 13-3-14.
-//  Copyright (c) 2015年 __MyCompanyName__. All rights reserved.
+//  Created by Jianhong Yang on 13-12-17.
+//  Copyright (c) 2013年 __MyCompanyName__. All rights reserved.
 //
 
 #import "UIImageView+Cache.h"
@@ -51,11 +51,13 @@ NSString *transferFileNameFromURL(NSString *url)
 
 - (void)dealloc
 {
+#if __has_feature(objc_arc)
+#else
     [_httpDownload release];
-    //
     [_mdicURLKey release];
     
     [super dealloc];
+#endif
 }
 
 + (UIImageViewManager *)sharedInstance
@@ -73,24 +75,33 @@ NSString *transferFileNameFromURL(NSString *url)
 - (void)downloadFile:(NSString *)filePath from:(NSString *)url showOn:(UIImageView *)imageView
           withResult:(UIImageViewDownlaodImageResult)downloadResult
 {
-    // 取出url相应的任务列表
-    NSMutableArray *marray = [_mdicURLKey objectForKey:url];
-    if (nil == marray) {
-        marray = [NSMutableArray array];
-        [_mdicURLKey setObject:marray forKey:url];
+    // 取出url相应的任务项
+    NSMutableDictionary *mdicURLItem = _mdicURLKey[url];
+    if (nil == mdicURLItem) {
+        mdicURLItem = [NSMutableDictionary dictionary];
+        [_mdicURLKey setObject:mdicURLItem forKey:url];
+    }
+    // 从任务项中取出任务列表
+    NSMutableArray *marrItem = mdicURLItem[@"list"];
+    if (nil == marrItem) {
+        marrItem = [NSMutableArray array];
+        [mdicURLItem setObject:marrItem forKey:@"list"];
     }
     // 加入下载任务
     if (downloadResult) {
         UIImageViewDownlaodImageResult result = [downloadResult copy];
-        [marray addObject:@{@"view": imageView, @"path": filePath, @"block": result}];
+        [marrItem addObject:@{@"view": imageView, @"path": filePath, @"block": result}];
+#if __has_feature(objc_arc)
+#else
         [result release];
+#endif
     }
     else {
-        [marray addObject:@{@"view": imageView, @"path": filePath}];
+        [marrItem addObject:@{@"view": imageView, @"path": filePath}];
     }
-    // 该url未下载才会下载
-    if (marray.count == 1) {
-        [_httpDownload requestWebDataWithURL:url andParam:@{@"url": url} cache:YES priority:YES];
+    // 第一次请求该url时才会下载
+    if (marrItem.count == 1) {
+        [_httpDownload requestWebDataWithURL:url andParam:@{@"url": url}];
     }
 }
 
@@ -99,19 +110,20 @@ NSString *transferFileNameFromURL(NSString *url)
     NSArray *arrKey = [_mdicURLKey allKeys];
     // 遍历所有url
     for (NSString *strKey in arrKey) {
-        NSMutableArray *marray = [_mdicURLKey objectForKey:strKey];
-        // 找url对应的任务列表
-        for (int i = 0; i < marray.count; i++) {
-            NSDictionary *dic = marray[i];
+        NSMutableDictionary *mdicURLItem = _mdicURLKey[strKey];
+        NSMutableArray *marrItem = mdicURLItem[@"list"];
+        // 遍历任务列表
+        for (int i = 0; i < marrItem.count; i++) {
+            NSDictionary *dicItem = marrItem[i];
             // 找到需要取消的UIImageView
-            if (dic[@"view"] == imageView) {
-                [marray removeObjectAtIndex:i];
+            if (dicItem[@"view"] == imageView) {
+                [marrItem removeObjectAtIndex:i];
                 // 只有这一个下载则要取消下载任务
-                if (0 == marray) {
+                if (0 == marrItem.count) {
                     [_httpDownload cancelRequest:@{@"url": strKey}];
                     [_mdicURLKey removeObjectForKey:strKey];
                 }
-                return;
+                break;
             }
         }
     }
@@ -123,54 +135,108 @@ NSString *transferFileNameFromURL(NSString *url)
 // 网络数据下载失败
 - (void)httpConnect:(HTTPConnection *)httpConnect error:(NSError *)error with:(NSDictionary *)dicParam
 {
-    NSString *url = [dicParam objectForKey:@"url"];
-    NSArray *array = [_mdicURLKey objectForKey:url];
-    // 该url的图片均下载失败
-    for (NSDictionary *dic in array) {
+    NSString *url = dicParam[@"url"];
+    NSMutableDictionary *mdicURLItem = _mdicURLKey[url];
+    NSArray *arrItem = mdicURLItem[@"list"];
+    // 遍历该url对应的任务项，触发下载失败的回调
+    for (NSDictionary *dicItem in arrItem) {
         // 下载失败回调
-        UIImageViewDownlaodImageResult downloadResult = dic[@"block"];
+        UIImageViewDownlaodImageResult downloadResult = dicItem[@"block"];
         if (downloadResult) {
-            downloadResult(dic[@"view"], dic[@"url"], error);
+            downloadResult(dicItem[@"view"], url, 1.0f, YES, error);
         }
     }
     [_mdicURLKey removeObjectForKey:url];
 }
 
+// 服务器返回的HTTP信息头
+- (void)httpConnect:(HTTPConnection *)httpConnect receiveResponseWithStatusCode:(NSInteger)statusCode
+ andAllHeaderFields:(NSDictionary *)dicAllHeaderFields with:(NSDictionary *)dicParam
+{
+    // 找到当前url对应的URL项
+    NSString *url = dicParam[@"url"];
+    NSMutableDictionary *mdicURLItem = _mdicURLKey[url];
+    // 保存图片文件大小
+    unsigned long fileSize = [dicAllHeaderFields[@"Content-Length"] intValue];
+    [mdicURLItem setObject:@(fileSize) forKey:@"fileSize"];
+    // 遍历该url对应的任务项，触发回调
+    NSArray *arrItem = mdicURLItem[@"list"];
+    for (int i = 0; i < arrItem.count; i++) {
+        NSDictionary *dicItem = arrItem[i];
+        // 开始下载的回调
+        UIImageViewDownlaodImageResult downloadResult = dicItem[@"block"];
+        if (downloadResult) {
+            downloadResult(dicItem[@"view"], url, 0.0f, NO, nil);
+        }
+    }
+}
+
+// 接收到部分数据
+- (void)httpConnect:(HTTPConnection *)httpConnect receivePartData:(NSData *)partData with:(NSDictionary *)dicParam
+{
+    // 找到当前url对应的URL项
+    NSString *url = dicParam[@"url"];
+    NSMutableDictionary *mdicURLItem = _mdicURLKey[url];
+    // 图片文件大小大于0，才回调下载进度
+    unsigned long fileSize = [mdicURLItem[@"fileSize"] intValue];
+    if (fileSize > 0) {
+        // 保存图片下载进度
+        unsigned long receivedSize = [mdicURLItem[@"receivedSize"] intValue]+partData.length;
+        [mdicURLItem setObject:@(receivedSize) forKey:@"receivedSize"];
+        // 遍历该url对应的任务项，触发回调
+        NSArray *arrItem = mdicURLItem[@"list"];
+        for (int i = 0; i < arrItem.count; i++) {
+            NSDictionary *dicItem = arrItem[i];
+            // 开始下载的回调
+            UIImageViewDownlaodImageResult downloadResult = dicItem[@"block"];
+            if (downloadResult) {
+                downloadResult(dicItem[@"view"], url, 1.0f*receivedSize/fileSize, NO, nil);
+            }
+        }
+    }
+}
+
 // 网络数据下载完成
 - (void)httpConnect:(HTTPConnection *)httpConnect finish:(NSData *)data with:(NSDictionary *)dicParam
 {
-    NSString *url = [dicParam objectForKey:@"url"];
-    NSArray *array = [_mdicURLKey objectForKey:url];
-    // 创建图片对象
+    NSString *url = dicParam[@"url"];
+    NSMutableDictionary *mdicURLItem = _mdicURLKey[url];
+    NSArray *arrItem = mdicURLItem[@"list"];
+    // 创建图片对象（为保证UIImage对象及时释放，故用alloc方式实例化）
     UIImage *image = [[UIImage alloc] initWithData:data];
-        // 相应的所有下载任务都算完成
+    // 相应的所有下载任务都算完成
     if (image) {
-        for (NSDictionary *dic in array) {
+        // 遍历该url对应的任务项，触发下载成功的回调
+        for (NSDictionary *dicItem in arrItem) {
             // 保存
-            NSString *filePath = dic[@"path"];
+            NSString *filePath = dicItem[@"path"];
             [data writeToFile:filePath atomically:YES];
             // 显示图片
-            UIImageView *imageView = dic[@"view"];
+            UIImageView *imageView = dicItem[@"view"];
             imageView.image = image;
             // 下载成功回调
-            UIImageViewDownlaodImageResult downloadResult = dic[@"block"];
+            UIImageViewDownlaodImageResult downloadResult = dicItem[@"block"];
             if (downloadResult) {
-                downloadResult(imageView, url, nil);
+                downloadResult(imageView, url, 1.0f, YES, nil);
             }
         }
     }
     else {
         NSError *error = [NSError errorWithDomain:@"ImageView" code:0
                                          userInfo:@{NSLocalizedDescriptionKey: @"图片数据错误"}];
-        for (NSDictionary *dic in array) {
+        // 遍历该url对应的任务项，触发下载失败的回调
+        for (NSDictionary *dicItem in arrItem) {
             // 下载失败回调
-            UIImageViewDownlaodImageResult downloadResult = dic[@"block"];
+            UIImageViewDownlaodImageResult downloadResult = dicItem[@"block"];
             if (downloadResult) {
-                downloadResult(dic[@"view"], url, error);
+                downloadResult(dicItem[@"view"], url, 1.0f, YES, error);
             }
         }
     }
+#if __has_feature(objc_arc)
+#else
     [image release];
+#endif
     // 清空任务
     [_mdicURLKey removeObjectForKey:url];
 }
@@ -182,7 +248,7 @@ NSString *transferFileNameFromURL(NSString *url)
 
 #define CachePath_UIImageView [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/UIImageView"]
 
-@implementation UIImageView (CSCache)
+@implementation UIImageView (Cache)
 
 /**
  *	@brief	清除UIImageView的缓存

@@ -115,7 +115,7 @@
     UserInfo *friendInfo = [_marrFriend objectAtIndex:indexPath.row];
     cell.textLabel.text = friendInfo.userName;
     // 显示头像
-    [cell.imageView loadImageFromCachePath:nil orPicUrl:friendInfo.avatarUrl withDownloadResult:^(UIImageView *imageView, NSString *picUrl, NSError *error) {
+    [cell.imageView loadImageFromCachePath:nil orPicUrl:friendInfo.avatarUrl withDownloadResult:^(UIImageView *imageView, NSString *picUrl, float progress, BOOL finished, NSError *error) {
         // error为nil表示下载成功
         if (nil == error) {
             [_tableView reloadData];

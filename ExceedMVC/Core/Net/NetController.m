@@ -67,8 +67,7 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
 {
     NSString *url = @"http://www.sina.com";
     NSDictionary *dicParam = @{@"type": [NSNumber numberWithInt:NetRequestType_Login]};
-    [_httpConnection requestWebDataWithURL:url andParam:dicParam
-                                     cache:YES priority:YES];
+    [_httpConnection requestWebDataWithURL:url andParam:dicParam];
 }
 
 // 下载指定url的文件
@@ -83,8 +82,7 @@ typedef NS_ENUM(NSUInteger, NetRequestType) {
     NSString *url = [NSString stringWithFormat:UserInfoUrl, userID];
     NSDictionary *dicParam = @{@"type": [NSNumber numberWithInt:NetRequestType_UserInfo],
                                @"userid": [NSNumber numberWithLongLong:userID]};
-    [_httpConnection requestWebDataWithURL:url andParam:dicParam
-                                     cache:YES priority:YES];
+    [_httpConnection requestWebDataWithURL:url andParam:dicParam];
 }
 
 

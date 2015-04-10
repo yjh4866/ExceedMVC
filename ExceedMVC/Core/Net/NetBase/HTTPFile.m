@@ -2,7 +2,7 @@
 //  HTTPFile.m
 //
 //
-//  Created by yangjh on 13-3-14.
+//  Created by Jianhong Yang on 15/1/26.
 //  Copyright (c) 2015年 __MyCompanyName__. All rights reserved.
 //
 
@@ -10,11 +10,11 @@
 #import "HTTPConnection.h"
 
 
-#define FilePath_Temp(filePath)      [filePath stringByAppendingPathExtension:@"ChanceTemp"]
+#define FilePath_Temp(filePath)      [filePath stringByAppendingPathExtension:@"DownloadTemp"]
 #define RetryCount_DownloadPartFile  1
 
 
-#pragma mark - CEHTTPFile
+#pragma mark - HTTPFile
 
 typedef NS_ENUM(unsigned int, NetDownloadType) {
     NetDownloadType_FileSize = 1,
@@ -46,10 +46,13 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
 - (void)dealloc
 {
     self.delegate = nil;
+#if __has_feature(objc_arc)
+#else
     [_httpDownload release];
     [_marrDownloadTask release];
     
     [super dealloc];
+#endif
 }
 
 
@@ -109,16 +112,14 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
     if (needHeadRequest) {
         [[NSFileManager defaultManager] removeItemAtPath:filePathTemp error:nil];
         // 创建URLRequest
-        NSMutableURLRequest *mURLRequest = [[NSMutableURLRequest alloc] init];
+        NSMutableURLRequest *mURLRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
         [mURLRequest setHTTPMethod:@"HEAD"];
-        [mURLRequest setURL:[NSURL URLWithString:url]];
-        [mURLRequest setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];
+        [mURLRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
+        [mURLRequest setValue:@"" forHTTPHeaderField:@"Accept-Encoding"];
         [mURLRequest setTimeoutInterval:30.0f];
         // 开始下载
         NSDictionary *dicParam = [NSDictionary dictionaryWithObjectsAndKeys:filePath, @"filepath", url, @"url", @(NetDownloadType_FileSize), @"type", param, @"param", nil];
-        [_httpDownload requestWebDataWithRequest:mURLRequest andParam:dicParam
-                                           cache:NO priority:YES];
-        [mURLRequest release];
+        [_httpDownload requestWebDataWithRequest:mURLRequest andParam:dicParam];
     }
 }
 
@@ -229,15 +230,17 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
             // 文件大小获取失败，则表示文件下载直接失败
             for (long i = _marrDownloadTask.count-1; i >= 0; i--) {
                 NSDictionary *dicItem = _marrDownloadTask[i];
-                if ([[dicItem objectForKey:@"filepath"] isEqualToString:filePath] &&
-                    [[dicItem objectForKey:@"url"] isEqualToString:url]) {
+                if ([dicItem[@"filepath"] isEqualToString:filePath] &&
+                    [dicItem[@"url"] isEqualToString:url]) {
                     // 移除任务
-                    [dicItem retain];
+                    NSDictionary *dicTempParam = nil;
+                    if (dicItem[@"param"] && [dicItem[@"param"] isKindOfClass:NSDictionary.class]) {
+                        dicTempParam = [NSDictionary dictionaryWithDictionary:dicItem[@"param"]];
+                    }
                     [_marrDownloadTask removeObjectAtIndex:i];
                     // 回调下载错误
                     [self.delegate httpFile:self downloadFailure:error from:url
-                                   withPath:filePath andParam:dicItem[@"param"]];
-                    [dicItem release];
+                                   withPath:filePath andParam:dicTempParam];
                 }
             }
         }
@@ -278,21 +281,23 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
             NSString *filePath = dicParam[@"filepath"];
             NSString *url = dicParam[@"url"];
             unsigned int fileSize = [dicAllHeaderFields[@"Content-Length"] intValue];
-            // 文件大小太小，表明视频文件错误
-            if (fileSize < 10) {
+            // 文件大小太小，只有一个字节，按文件错误处理
+            if (fileSize < 1) {
                 // 文件下载直接失败
                 for (long i = _marrDownloadTask.count-1; i >= 0; i--) {
                     NSDictionary *dicItem = _marrDownloadTask[i];
-                    if ([[dicItem objectForKey:@"filepath"] isEqualToString:filePath] &&
-                        [[dicItem objectForKey:@"url"] isEqualToString:url]) {
+                    if ([dicItem[@"filepath"] isEqualToString:filePath] &&
+                        [dicItem[@"url"] isEqualToString:url]) {
                         // 移除任务
-                        [dicItem retain];
+                        NSDictionary *dicTempParam = nil;
+                        if (dicItem[@"param"] && [dicItem[@"param"] isKindOfClass:NSDictionary.class]) {
+                            dicTempParam = [NSDictionary dictionaryWithDictionary:dicItem[@"param"]];
+                        }
                         [_marrDownloadTask removeObjectAtIndex:i];
                         // 回调下载错误
-                        NSError *error = [NSError errorWithDomain:@"ChanceVideoAD" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"视频文件错误"}];
+                        NSError *error = [NSError errorWithDomain:@"HTTPFile" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"文件错误"}];
                         [self.delegate httpFile:self downloadFailure:error from:url
-                                       withPath:filePath andParam:dicItem[@"param"]];
-                        [dicItem release];
+                                       withPath:filePath andParam:dicTempParam];
                     }
                 }
                 return;
@@ -393,18 +398,16 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
            andErrorCount:(unsigned int)errorCount
 {
     // 创建URLRequest
-    NSMutableURLRequest *mURLRequest = [[NSMutableURLRequest alloc] init];
-    [mURLRequest setURL:[NSURL URLWithString:url]];
+    NSMutableURLRequest *mURLRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
     [mURLRequest setValue:[NSString stringWithFormat:@"bytes=%@-%@", @(start), @(start+length-1)]
        forHTTPHeaderField:@"RANGE"];
-    [mURLRequest setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];
+    [mURLRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
+    [mURLRequest setValue:@"" forHTTPHeaderField:@"Accept-Encoding"];
     [mURLRequest setTimeoutInterval:30.0f];
     // 开始下载
     NSDictionary *dicParam = @{@"type": @(NetDownloadType_Download), @"url": url,
                                @"start": @(start), @"len": @(length), @"errcount": @(errorCount)};
-    [_httpDownload requestWebDataWithRequest:mURLRequest andParam:dicParam
-                                       cache:YES priority:YES];
-    [mURLRequest release];
+    [_httpDownload requestWebDataWithRequest:mURLRequest andParam:dicParam];
 }
 
 // 下载部分文件结束
@@ -460,11 +463,11 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
             // 所有的文件下载任务均完成，则结束任务
             if (downloadFinished) {
                 // 从任务队列中删除
-                [mdicTask retain];
+                NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:mdicTask];
                 [_marrDownloadTask removeObjectAtIndex:i];
                 // 不是所有请求都失败，则可以认为下载成功
                 unsigned int totalCount = [mdicTaskInfo[@"Count"] intValue];
-                unsigned int errCount = [mdicTask[@"ErrorCount"] intValue];
+                unsigned int errCount = [dicTempTask[@"ErrorCount"] intValue];
                 if (totalCount != errCount) {
                     // 错误数为0表示文件下载完整，不存在数据错误
                     if (0 == errCount) {
@@ -476,19 +479,18 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
                         [[NSFileManager defaultManager] moveItemAtPath:filePathTemp toPath:filePath error:nil];
                         // 回调下载成功
                         [self.delegate httpFile:self downloadSuccess:YES
-                                           from:url withPath:filePath andParam:mdicTask[@"param"]];
+                                           from:url withPath:filePath andParam:dicTempTask[@"param"]];
                     }
                     else {
                         [self.delegate httpFile:self downloadSuccess:NO
-                                           from:url withPath:filePath andParam:mdicTask[@"param"]];
+                                           from:url withPath:filePath andParam:dicTempTask[@"param"]];
                     }
                 }
                 // 所有请求都失败则表示下载失败
                 else {
                     [self.delegate httpFile:self downloadFailure:error from:url
-                                   withPath:filePath andParam:mdicTask[@"param"]];
+                                   withPath:filePath andParam:dicTempTask[@"param"]];
                 }
-                [mdicTask release];
             }
             // 否则将任务信息更新到临时文件
             else {
@@ -515,8 +517,8 @@ typedef NS_ENUM(unsigned int, NetDownloadType) {
 {
     for (int i = 0; i < array.count; i++) {
         NSDictionary *dicItem = array[i];
-        if ([[dicItem objectForKey:@"filepath"] isEqualToString:filePath] &&
-            [[dicItem objectForKey:@"url"] isEqualToString:url]) {
+        if ([dicItem[@"filepath"] isEqualToString:filePath] &&
+            [dicItem[@"url"] isEqualToString:url]) {
             return i;
         }
     }

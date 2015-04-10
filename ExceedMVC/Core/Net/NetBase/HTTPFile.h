@@ -1,8 +1,8 @@
 //
 //  HTTPFile.h
-//  
 //
-//  Created by yangjh on 13-3-14.
+//
+//  Created by Jianhong Yang on 15/1/26.
 //  Copyright (c) 2015年 __MyCompanyName__. All rights reserved.
 //
 

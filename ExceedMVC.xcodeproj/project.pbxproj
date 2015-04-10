@@ -141,7 +141,6 @@
 		B115E3D71760C07800F31423 /* UIEngine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIEngine.m; path = UI/Engine/UIEngine.m; sourceTree = "<group>"; };
 		B115E3DD1760C07800F31423 /* MBProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = UI/OtherViews/MBProgressHUD.h; sourceTree = "<group>"; };
 		B115E3DE1760C07800F31423 /* MBProgressHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = UI/OtherViews/MBProgressHUD.m; sourceTree = "<group>"; };
-		B115E3E01760C07800F31423 /* NSObject+ActivityAlertView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSObject+ActivityAlertView.h"; path = "UI/OtherViews/NSObject+ActivityAlertView.h"; sourceTree = "<group>"; };
 		B115E3E11760C07800F31423 /* NSString+AlertView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+AlertView.h"; path = "UI/OtherViews/NSString+AlertView.h"; sourceTree = "<group>"; };
 		B115E3E21760C07800F31423 /* NSString+AlertView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+AlertView.m"; path = "UI/OtherViews/NSString+AlertView.m"; sourceTree = "<group>"; };
 		B115E3E41760C07800F31423 /* UICustomProgressBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UICustomProgressBar.h; path = UI/OtherViews/UICustomProgressBar.h; sourceTree = "<group>"; };
@@ -427,7 +426,6 @@
 				FF14A6F61A7B583F006EFF29 /* UIImageView+Cache.m */,
 				B115E3DD1760C07800F31423 /* MBProgressHUD.h */,
 				B115E3DE1760C07800F31423 /* MBProgressHUD.m */,
-				B115E3E01760C07800F31423 /* NSObject+ActivityAlertView.h */,
 				B115E3E11760C07800F31423 /* NSString+AlertView.h */,
 				B115E3E21760C07800F31423 /* NSString+AlertView.m */,
 				B115E3E41760C07800F31423 /* UICustomProgressBar.h */,

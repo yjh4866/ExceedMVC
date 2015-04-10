@@ -123,7 +123,7 @@
     cell.textLabel.text = chatsItem.userName;
     cell.detailTextLabel.text = chatsItem.latestMsg;
     // 显示头像
-    [cell.imageView loadImageFromCachePath:nil orPicUrl:chatsItem.avatarUrl withDownloadResult:^(UIImageView *imageView, NSString *picUrl, NSError *error) {
+    [cell.imageView loadImageFromCachePath:nil orPicUrl:chatsItem.avatarUrl withDownloadResult:^(UIImageView *imageView, NSString *picUrl, float progress, BOOL finished, NSError *error) {
         // error为nil表示下载成功
         if (nil == error) {
             [_tableView reloadData];
