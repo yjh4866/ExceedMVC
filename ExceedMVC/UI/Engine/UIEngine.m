@@ -58,28 +58,14 @@
         if (self.engineCore.online) {
             MainVC *mainVC = [[MainVC alloc] init];
             mainVC.dataSource = self;
-            if ([UIDevice systemVersionID] < __IPHONE_5_0) {
-                [_rootViewController presentModalViewController:mainVC
-                                                       animated:NO];
-            }
-            else {
-                [_rootViewController presentViewController:mainVC
-                                                  animated:NO completion:nil];
-            }
+            [_rootViewController presentViewController:mainVC animated:NO completion:nil];
             [mainVC release];
         }
         else {
             LoginVC *loginVC = [[LoginVC alloc] init];
             loginVC.delegate = self;
             UINavigationController *navLogin = [[UINavigationController alloc] initWithRootViewController:loginVC];
-            if ([UIDevice systemVersionID] < __IPHONE_5_0) {
-                [_rootViewController presentModalViewController:navLogin
-                                                       animated:NO];
-            }
-            else {
-                [_rootViewController presentViewController:navLogin
-                                                  animated:NO completion:nil];
-            }
+            [_rootViewController presentViewController:navLogin animated:NO completion:nil];
             [navLogin release];
             [loginVC release];
         }
@@ -140,30 +126,15 @@
 - (void)loginVCLoginSuccess:(LoginVC *)loginVC
 {
     UIViewController *navLogin = [loginVC.navigationController retain];
-    if ([UIDevice systemVersionID] < __IPHONE_5_0) {
-        [_rootViewController dismissModalViewControllerAnimated:NO];
-        //
-        MainVC *mainVC = [[MainVC alloc] init];
-        mainVC.dataSource = self;
-        [_rootViewController presentModalViewController:mainVC animated:NO];
-        [mainVC presentModalViewController:navLogin animated:NO];
-        [mainVC release];
-        
-        [navLogin.parentViewController dismissModalViewControllerAnimated:YES];
-    }
-    else {
-        [_rootViewController dismissViewControllerAnimated:NO completion:nil];
-        //
-        MainVC *mainVC = [[MainVC alloc] init];
-        mainVC.dataSource = self;
-        [_rootViewController presentViewController:mainVC
-                                          animated:NO completion:nil];
-        [mainVC presentViewController:navLogin animated:NO completion:nil];
-        [mainVC release];
-        
-        [navLogin dismissViewControllerAnimated:YES
-                                                          completion:nil];
-    }
+    [_rootViewController dismissViewControllerAnimated:NO completion:nil];
+    //
+    MainVC *mainVC = [[MainVC alloc] init];
+    mainVC.dataSource = self;
+    [_rootViewController presentViewController:mainVC animated:NO completion:nil];
+    [mainVC presentViewController:navLogin animated:NO completion:nil];
+    [mainVC release];
+    
+    [navLogin dismissViewControllerAnimated:YES completion:nil];
     [navLogin release];
 }
 

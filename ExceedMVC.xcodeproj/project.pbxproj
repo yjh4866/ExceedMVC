@@ -37,7 +37,6 @@
 		B115E3B61760C07700F31423 /* NetController.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3B51760C07700F31423 /* NetController.m */; };
 		B115E3BA1760C07700F31423 /* FileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3B91760C07700F31423 /* FileManager.m */; };
 		B115E3BE1760C07700F31423 /* ContactsMan.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3BD1760C07700F31423 /* ContactsMan.m */; };
-		B115E3C11760C07700F31423 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3C01760C07700F31423 /* JSONKit.m */; };
 		B115E3C41760C07700F31423 /* NSString+Tool.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3C31760C07700F31423 /* NSString+Tool.m */; };
 		B115E3C71760C07700F31423 /* PictureEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3C61760C07700F31423 /* PictureEditor.m */; };
 		B115E3CA1760C07700F31423 /* PinyinQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = B115E3C91760C07700F31423 /* PinyinQuery.m */; };
@@ -69,6 +68,7 @@
 		B1756E361762215B00C270E4 /* AboutVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B1756E351762215B00C270E4 /* AboutVC.m */; };
 		FF14A6F41A7B54D5006EFF29 /* HTTPFile.m in Sources */ = {isa = PBXBuildFile; fileRef = FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */; };
 		FF14A6F71A7B583F006EFF29 /* UIImageView+Cache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF14A6F61A7B583F006EFF29 /* UIImageView+Cache.m */; };
+		FF500AAD1AE495880026F47D /* UIScrollView+PullRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = FF500AAC1AE495880026F47D /* UIScrollView+PullRefresh.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -123,8 +123,6 @@
 		B115E3B91760C07700F31423 /* FileManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FileManager.m; path = Core/FileManager/FileManager.m; sourceTree = "<group>"; };
 		B115E3BC1760C07700F31423 /* ContactsMan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ContactsMan.h; path = Core/Other/ContactsMan.h; sourceTree = "<group>"; };
 		B115E3BD1760C07700F31423 /* ContactsMan.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ContactsMan.m; path = Core/Other/ContactsMan.m; sourceTree = "<group>"; };
-		B115E3BF1760C07700F31423 /* JSONKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONKit.h; path = Core/Other/JSONKit.h; sourceTree = "<group>"; };
-		B115E3C01760C07700F31423 /* JSONKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSONKit.m; path = Core/Other/JSONKit.m; sourceTree = "<group>"; };
 		B115E3C21760C07700F31423 /* NSString+Tool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+Tool.h"; path = "Core/Other/NSString+Tool.h"; sourceTree = "<group>"; };
 		B115E3C31760C07700F31423 /* NSString+Tool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+Tool.m"; path = "Core/Other/NSString+Tool.m"; sourceTree = "<group>"; };
 		B115E3C51760C07700F31423 /* PictureEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PictureEditor.h; path = Core/Other/PictureEditor.h; sourceTree = "<group>"; };
@@ -187,6 +185,8 @@
 		FF14A6F31A7B54D5006EFF29 /* HTTPFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPFile.m; path = Core/Net/NetBase/HTTPFile.m; sourceTree = "<group>"; };
 		FF14A6F51A7B583F006EFF29 /* UIImageView+Cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImageView+Cache.h"; path = "UI/OtherViews/UIImageView+Cache.h"; sourceTree = "<group>"; };
 		FF14A6F61A7B583F006EFF29 /* UIImageView+Cache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+Cache.m"; path = "UI/OtherViews/UIImageView+Cache.m"; sourceTree = "<group>"; };
+		FF500AAB1AE495880026F47D /* UIScrollView+PullRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIScrollView+PullRefresh.h"; path = "UI/OtherViews/UIScrollView+PullRefresh.h"; sourceTree = "<group>"; };
+		FF500AAC1AE495880026F47D /* UIScrollView+PullRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIScrollView+PullRefresh.m"; path = "UI/OtherViews/UIScrollView+PullRefresh.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -377,8 +377,6 @@
 			children = (
 				B115E3BC1760C07700F31423 /* ContactsMan.h */,
 				B115E3BD1760C07700F31423 /* ContactsMan.m */,
-				B115E3BF1760C07700F31423 /* JSONKit.h */,
-				B115E3C01760C07700F31423 /* JSONKit.m */,
 				B115E3C21760C07700F31423 /* NSString+Tool.h */,
 				B115E3C31760C07700F31423 /* NSString+Tool.m */,
 				B115E3C51760C07700F31423 /* PictureEditor.h */,
@@ -430,6 +428,8 @@
 				B115E3E21760C07800F31423 /* NSString+AlertView.m */,
 				B115E3E41760C07800F31423 /* UICustomProgressBar.h */,
 				B115E3E51760C07800F31423 /* UICustomProgressBar.m */,
+				FF500AAB1AE495880026F47D /* UIScrollView+PullRefresh.h */,
+				FF500AAC1AE495880026F47D /* UIScrollView+PullRefresh.m */,
 				B115E3E71760C07800F31423 /* UIView+Badge.h */,
 				B115E3E81760C07800F31423 /* UIView+Badge.m */,
 				B115E3EA1760C07800F31423 /* UIView+MBProgressHUD.h */,
@@ -540,6 +540,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF500AAD1AE495880026F47D /* UIScrollView+PullRefresh.m in Sources */,
 				B115E3761760C07700F31423 /* main.m in Sources */,
 				B115E37A1760C07700F31423 /* AppDelegate.m in Sources */,
 				B115E3871760C07700F31423 /* AppSetting.m in Sources */,
@@ -559,7 +560,6 @@
 				B115E3BA1760C07700F31423 /* FileManager.m in Sources */,
 				FF14A6F41A7B54D5006EFF29 /* HTTPFile.m in Sources */,
 				B115E3BE1760C07700F31423 /* ContactsMan.m in Sources */,
-				B115E3C11760C07700F31423 /* JSONKit.m in Sources */,
 				B115E3C41760C07700F31423 /* NSString+Tool.m in Sources */,
 				B115E3C71760C07700F31423 /* PictureEditor.m in Sources */,
 				B115E3CA1760C07700F31423 /* PinyinQuery.m in Sources */,
@@ -667,6 +667,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ExceedMVC/ExceedMVC-Prefix.pch";
 				INFOPLIST_FILE = "ExceedMVC/ExceedMVC-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -678,6 +679,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ExceedMVC/ExceedMVC-Prefix.pch";
 				INFOPLIST_FILE = "ExceedMVC/ExceedMVC-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

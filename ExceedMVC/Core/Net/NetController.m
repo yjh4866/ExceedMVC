@@ -9,7 +9,6 @@
 #import "NetController.h"
 #import "HTTPConnection.h"
 #import "HTTPFile.h"
-#import "JSONKit.h"
 
 
 #define LOCALNET

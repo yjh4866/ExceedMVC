@@ -65,7 +65,7 @@
 	unsigned char result[32];
     //
 	const char *cString = [self cStringUsingEncoding:encoding];
-	CC_MD5(cString, strlen(cString), result);
+	CC_MD5(cString, (CC_LONG)strlen(cString), result);
  	NSMutableString *mstrMD5String = [NSMutableString string];
     for (int i = 0; i < 16; i++) {
         [mstrMD5String appendFormat:@"%02X", result[i]];
@@ -79,7 +79,7 @@
 	unsigned char result[32];
     //
 	const char *cString = [self cStringUsingEncoding:encoding];
-	CC_MD5(cString, strlen(cString), result);
+	CC_MD5(cString, (CC_LONG)strlen(cString), result);
  	NSMutableString *mstrMD5String = [NSMutableString string];
     for (int i = 0; i < 16; i++) {
         [mstrMD5String appendFormat:@"%02x", result[i]];

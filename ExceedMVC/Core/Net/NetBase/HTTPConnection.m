@@ -214,13 +214,14 @@
     // 删除失败的任务
     if (dicTask) {
         // 删除
+        NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:dicTask];
         self.numberOfURLConnection -= 1;
         [_marrayTaskDic removeObjectAtIndex:indexTask];
         // 启动新任务
         [self startURLConnection];
         // 通知上层任务失败
         if ([self.delegate respondsToSelector:@selector(httpConnect:error:with:)]) {
-            [self.delegate httpConnect:self error:error with:dicTask[@"param"]];
+            [self.delegate httpConnect:self error:error with:dicTempTask[@"param"]];
         }
     }
 }
