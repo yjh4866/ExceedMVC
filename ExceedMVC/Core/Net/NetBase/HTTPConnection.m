@@ -434,8 +434,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
 didCompleteWithError:(NSError *)error
 {
-    // 完成不算错误
-    if (NSURLSessionTaskStateCompleted == task.state) {
+    // error为nil即表示任务完成
+    if (nil == error) {
         HTTPLog(@"网络请求完成");
         // 找到当前完成的任务
         int indexTask = 0;
@@ -507,12 +507,12 @@ didReceiveResponse:(NSURLResponse *)response
 {
     HTTPLog(@"网络请求收到响应");
     // 找到相应的任务
-    NSMutableDictionary *mdicTask = nil;
+    NSDictionary *dicTask = nil;
     for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSMutableDictionary *mdic = _marrayTaskDic[i];
+        NSDictionary *dic = _marrayTaskDic[i];
         // 找到网络连接相应的数据字典
-        if (mdic[@"SessionTask"] == dataTask) {
-            mdicTask = mdic;
+        if (dic[@"SessionTask"] == dataTask) {
+            dicTask = dic;
             break;
         }
     }
@@ -521,8 +521,7 @@ didReceiveResponse:(NSURLResponse *)response
         NSHTTPURLResponse *responseHTTP = (NSHTTPURLResponse *)response;
         NSUInteger statusCode = responseHTTP.statusCode;
         NSDictionary *dicAllHeaderFields = responseHTTP.allHeaderFields;
-        [mdicTask setValue:dicAllHeaderFields[@"Content-Length"] forKey:@"Content-Length"];
-        NSDictionary *dicParam = mdicTask[@"param"];
+        NSDictionary *dicParam = dicTask[@"param"];
         // 收到服务器返回的HTTP信息头
         if ([self.delegate respondsToSelector:@selector(httpConnect:receiveResponseWithStatusCode:andAllHeaderFields:with:)]) {
             [self.delegate httpConnect:self receiveResponseWithStatusCode:statusCode
