@@ -434,6 +434,38 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
 didCompleteWithError:(NSError *)error
 {
+    // 完成不算错误
+    if (NSURLSessionTaskStateCompleted == task.state) {
+        HTTPLog(@"网络请求完成");
+        // 找到当前完成的任务
+        int indexTask = 0;
+        NSDictionary *dicTask = nil;
+        for (int i = 0; i < _marrayTaskDic.count; i++) {
+            NSDictionary *dic = _marrayTaskDic[i];
+            // 找到网络连接相应的数据字典
+            if (dic[@"SessionTask"] == task) {
+                indexTask = i;
+                dicTask = dic;
+                break;
+            }
+        }
+        // 删除已经完成的任务
+        if (dicTask) {
+            // 删除
+            NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:dicTask];
+            self.numberOfURLConnection -= 1;
+            [_marrayTaskDic removeObjectAtIndex:indexTask];
+            // 启动新任务
+            [self startURLConnection];
+            // 通知上层完成任务
+            if ([self.delegate respondsToSelector:@selector(httpConnect:finish:with:)]) {
+                NSData *dataCache = dicTempTask[@"cache"];
+                NSDictionary *dicParam = dicTempTask[@"param"];
+                [self.delegate httpConnect:self finish:dataCache with:dicParam];
+            }
+        }
+        return;
+    }
     // 取消请求不算错误
     if ([NSURLErrorDomain isEqualToString:error.domain] && NSURLErrorCancelled == error.code) {
         return;
@@ -523,27 +555,9 @@ didReceiveResponse:(NSURLResponse *)response
         [mdataCache appendData:data];
         NSDictionary *dicParam = dicTask[@"param"];
         HTTPLog(@"该数据的参数：%@", dicParam);
-        // 所有数据均已接收完成
-        if ([dicTask[@"Content-Length"] longLongValue] > 0 &&
-            mdataCache.length == [dicTask[@"Content-Length"] longLongValue]) {
-            // 删除
-            NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:dicTask];
-            self.numberOfURLConnection -= 1;
-            [_marrayTaskDic removeObject:dicTask];
-            // 启动新任务
-            [self startURLConnection];
-            // 通知上层完成任务
-            if ([self.delegate respondsToSelector:@selector(httpConnect:finish:with:)]) {
-                NSData *dataCache = dicTempTask[@"cache"];
-                NSDictionary *dicParam = dicTempTask[@"param"];
-                [self.delegate httpConnect:self finish:dataCache with:dicParam];
-            }
-        }
         // 收到部分数据
-        else {
-            if ([self.delegate respondsToSelector:@selector(httpConnect:receivePartData:with:)]) {
-                [self.delegate httpConnect:self receivePartData:data with:dicParam];
-            }
+        if ([self.delegate respondsToSelector:@selector(httpConnect:receivePartData:with:)]) {
+            [self.delegate httpConnect:self receivePartData:data with:dicParam];
         }
     }
     HTTPLog(@"网络请求收到数据并处理完成");
@@ -553,34 +567,6 @@ didReceiveResponse:(NSURLResponse *)response
  willCacheResponse:(NSCachedURLResponse *)proposedResponse
  completionHandler:(void (^)(NSCachedURLResponse * __nullable cachedResponse))completionHandler
 {
-    HTTPLog(@"网络请求完成");
-    // 找到当前完成的任务
-    int indexTask = 0;
-    NSDictionary *dicTask = nil;
-    for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSDictionary *dic = _marrayTaskDic[i];
-        // 找到网络连接相应的数据字典
-        if (dic[@"SessionTask"] == dataTask) {
-            indexTask = i;
-            dicTask = dic;
-            break;
-        }
-    }
-    // 删除已经完成的任务
-    if (dicTask) {
-        // 删除
-        NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:dicTask];
-        self.numberOfURLConnection -= 1;
-        [_marrayTaskDic removeObjectAtIndex:indexTask];
-        // 启动新任务
-        [self startURLConnection];
-        // 通知上层完成任务
-        if ([self.delegate respondsToSelector:@selector(httpConnect:finish:with:)]) {
-            NSData *dataCache = dicTempTask[@"cache"];
-            NSDictionary *dicParam = dicTempTask[@"param"];
-            [self.delegate httpConnect:self finish:dataCache with:dicParam];
-        }
-    }
     if (completionHandler) {
         completionHandler(proposedResponse);
     }
