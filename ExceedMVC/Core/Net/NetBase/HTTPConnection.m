@@ -110,12 +110,19 @@
 {
     // 非主线程取数据，直接同步获取，然后通过协议回调
     if ([NSThread currentThread] != [NSThread mainThread]) {
-        NSURLResponse *response = nil;
-        NSError *error = nil;
-        NSData *dataAD = [NSURLConnection sendSynchronousRequest:request
-                                               returningResponse:&response
-                                                           error:&error];
-        [self.delegate httpConnect:self finish:dataAD with:dicParam];
+        if ([[UIDevice currentDevice].systemVersion floatValue] < 9.0) {
+            NSURLResponse *response = nil;
+            NSError *error = nil;
+            NSData *dataAD = [NSURLConnection sendSynchronousRequest:request
+                                                   returningResponse:&response
+                                                               error:&error];
+            [self.delegate httpConnect:self finish:dataAD with:dicParam];
+        }
+        else {
+            [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * __nullable data, NSURLResponse * __nullable response, NSError * __nullable error) {
+                [self.delegate httpConnect:self finish:data with:dicParam];
+            }];
+        }
         return YES;
     }
     if (nil == dicParam) {
