@@ -184,7 +184,7 @@
             }
             else {
                 NSURLSessionDataTask *dataTask = dicTask[@"SessionTask"];
-                [dataTask suspend];
+                [dataTask cancel];
                 self.numberOfURLConnection -= 1;
             }
             // 从任务队列中删除
@@ -213,7 +213,7 @@
         }
         else {
             NSURLSessionDataTask *dataTask = dicTask[@"SessionTask"];
-            [dataTask suspend];
+            [dataTask cancel];
             self.numberOfURLConnection -= 1;
         }
     }
@@ -427,6 +427,10 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
 didCompleteWithError:(NSError *)error
 {
+    // 取消请求不算错误
+    if ([NSURLErrorDomain isEqualToString:error.domain] && NSURLErrorCancelled == error.code) {
+        return;
+    }
     HTTPLog(@"网络请求错误:%@", error);
     // 找到当前失败的任务
     int indexTask = 0;
