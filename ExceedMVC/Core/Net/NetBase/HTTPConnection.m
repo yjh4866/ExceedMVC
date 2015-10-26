@@ -380,7 +380,9 @@ willPerformHTTPRedirection:(NSHTTPURLResponse *)response
         newRequest:(NSURLRequest *)request
  completionHandler:(void (^)(NSURLRequest * __nullable))completionHandler
 {
-    
+    if (completionHandler) {
+        completionHandler(request);
+    }
 }
 
 /* The task has received a request specific authentication challenge.
@@ -392,7 +394,10 @@ willPerformHTTPRedirection:(NSHTTPURLResponse *)response
 didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * __nullable credential))completionHandler
 {
-    
+    if (completionHandler) {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling,
+                          [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+    }
 }
 
 /* Sent if a task requires a new, unopened body stream.  This may be
@@ -481,7 +486,9 @@ didReceiveResponse:(NSURLResponse *)response
                     andAllHeaderFields:dicAllHeaderFields with:dicParam];
         }
     }
-    completionHandler(NSURLSessionResponseAllow);
+    if (completionHandler) {
+        completionHandler(NSURLSessionResponseAllow);
+    }
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
@@ -562,6 +569,9 @@ didReceiveResponse:(NSURLResponse *)response
             NSDictionary *dicParam = dicTempTask[@"param"];
             [self.delegate httpConnect:self finish:dataCache with:dicParam];
         }
+    }
+    if (completionHandler) {
+        completionHandler(proposedResponse);
     }
 }
 
