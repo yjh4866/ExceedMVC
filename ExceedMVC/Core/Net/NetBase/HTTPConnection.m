@@ -16,7 +16,7 @@
 #define TaskStatus_Wait      @"Wait"
 
 
-@interface HTTPConnection () <NSURLSessionDataDelegate, NSURLSessionDownloadDelegate> {
+@interface HTTPConnection () <NSURLSessionDataDelegate> {
     NSMutableArray *_marrayTaskDic;
 }
 @property (nonatomic, assign) int numberOfURLConnection;
@@ -349,84 +349,7 @@
 }
 
 
-#pragma mark - NSURLSessionDelegate
-
-- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(nullable NSError *)error
-{
-    
-}
-
-- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
- completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * __nullable credential))completionHandler
-{
-    if (completionHandler) {
-        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling,
-                          [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-    }
-}
-
-- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
-{
-    
-}
-
-
 #pragma mark - NSURLSessionTaskDelegate
-
-/* An HTTP request is attempting to perform a redirection to a different
- * URL. You must invoke the completion routine to allow the
- * redirection, allow the redirection with a modified request, or
- * pass nil to the completionHandler to cause the body of the redirection
- * response to be delivered as the payload of this request. The default
- * is to follow redirections.
- *
- * For tasks in background sessions, redirections will always be followed and this method will not be called.
- */
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
-willPerformHTTPRedirection:(NSHTTPURLResponse *)response
-        newRequest:(NSURLRequest *)request
- completionHandler:(void (^)(NSURLRequest * __nullable))completionHandler
-{
-    if (completionHandler) {
-        completionHandler(request);
-    }
-}
-
-/* The task has received a request specific authentication challenge.
- * If this delegate is not implemented, the session specific authentication challenge
- * will *NOT* be called and the behavior will be the same as using the default handling
- * disposition.
- */
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
-didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
- completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * __nullable credential))completionHandler
-{
-    if (completionHandler) {
-        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling,
-                          [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-    }
-}
-
-/* Sent if a task requires a new, unopened body stream.  This may be
- * necessary when authentication has failed for any request that
- * involves a body stream.
- */
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
- needNewBodyStream:(void (^)(NSInputStream * __nullable bodyStream))completionHandler
-{
-    
-}
-
-/* Sent periodically to notify the delegate of upload progress.  This
- * information is also available as properties of the task.
- */
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
-   didSendBodyData:(int64_t)bytesSent
-    totalBytesSent:(int64_t)totalBytesSent
-totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
-{
-    
-}
 
 /* Sent as the last message related to a specific task.  Error may be
  * nil, which implies that no error occurred and this task is complete.
@@ -560,39 +483,6 @@ didReceiveResponse:(NSURLResponse *)response
         }
     }
     HTTPLog(@"网络请求收到数据并处理完成");
-}
-
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
- willCacheResponse:(NSCachedURLResponse *)proposedResponse
- completionHandler:(void (^)(NSCachedURLResponse * __nullable cachedResponse))completionHandler
-{
-    if (completionHandler) {
-        completionHandler(proposedResponse);
-    }
-}
-
-
-#pragma mark - NSURLSessionDownloadDelegate
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-didFinishDownloadingToURL:(NSURL *)location
-{
-    
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-      didWriteData:(int64_t)bytesWritten
- totalBytesWritten:(int64_t)totalBytesWritten
-totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-{
-    
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
- didResumeAtOffset:(int64_t)fileOffset
-expectedTotalBytes:(int64_t)expectedTotalBytes
-{
-    
 }
 
 
