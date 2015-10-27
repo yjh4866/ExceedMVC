@@ -12,14 +12,53 @@
 
 #define MaxNumber_URLConnection         10
 
-#define TaskStatus_Run       @"Run"
-#define TaskStatus_Wait      @"Wait"
+#pragma mark -
+#pragma mark - HTTPTaskItem
+typedef NS_ENUM(unsigned int, HTTPTaskStatus) {
+    HTTPTaskStatus_Running,
+    HTTPTaskStatus_Waiting,
+};
+@interface HTTPTaskItem : NSObject {
+    NSMutableData *_mdataCache;
+}
+@property (nonatomic, retain) NSURLConnection *urlConnection;
+@property (nonatomic, retain) NSURLSessionDataTask *urlDataTask;
+@property (nonatomic, assign) HTTPTaskStatus taskStatus;
+@property (nonatomic, readonly) NSMutableData *mdataCache;
+@property (nonatomic, retain) NSDictionary *param;
+@end
+#pragma mark - Implementation HTTPTaskItem
+@implementation HTTPTaskItem
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _mdataCache = [[NSMutableData alloc] init];
+    }
+    return self;
+}
+- (void)dealloc
+{
+    self.urlConnection = nil;
+    self.urlDataTask = nil;
+    self.param = nil;
+    //
+#if __has_feature(objc_arc)
+#else
+    [_mdataCache release];
+    [super dealloc];
+#endif
+}
+@end
 
+
+#pragma mark -
+#pragma mark - Implementation HTTPConnection
 
 @interface HTTPConnection () <NSURLSessionDataDelegate> {
     NSMutableArray *_marrayTaskDic;
 }
-@property (nonatomic, assign) int numberOfURLConnection;
+@property (nonatomic, assign) int numberOfRequesting;
 @end
 
 
@@ -30,7 +69,7 @@
     self = [super init];
     if (self) {
         // Custom initialization.
-        self.numberOfURLConnection = 0;
+        self.numberOfRequesting = 0;
         self.maxNumberOfURLConnection = MaxNumber_URLConnection;
         _marrayTaskDic = [[NSMutableArray alloc] initWithCapacity:5];
     }
@@ -57,9 +96,9 @@
 // 判断指定参数的网络请求是否存在
 - (BOOL)requestIsExist:(NSDictionary *)dicParam
 {
-    for (NSDictionary *dicTask in _marrayTaskDic) {
+    for (HTTPTaskItem *taskItem in _marrayTaskDic) {
         //
-        if ([dicParam isEqualToDictionary:dicTask[@"param"]]) {
+        if ([dicParam isEqualToDictionary:taskItem.param]) {
             return YES;
         }
     }
@@ -69,17 +108,15 @@
 // 指定url是否在请求中
 - (BOOL)urlIsRequesting:(NSString *)url
 {
-    for (NSDictionary *dicTask in _marrayTaskDic) {
-        //
-        NSURLConnection *connect = dicTask[@"connect"];
-        if (connect) {
-            if ([[connect.originalRequest.URL description] isEqualToString:url]) {
+    for (HTTPTaskItem *taskItem in _marrayTaskDic) {
+        // 先查看NSURLSessionDataTask
+        if (taskItem.urlDataTask) {
+            if ([[taskItem.urlDataTask.originalRequest.URL description] isEqualToString:url]) {
                 return YES;
             }
         }
         else {
-            NSURLSessionDataTask *dataTask = dicTask[@"connect"];
-            if ([[dataTask.originalRequest.URL description] isEqualToString:url]) {
+            if ([[taskItem.urlConnection.originalRequest.URL description] isEqualToString:url]) {
                 return YES;
             }
         }
@@ -129,38 +166,39 @@
         return NO;
     }
     // 正在处理或等待处理的任务不再接收
-    for (NSDictionary *dicTask in _marrayTaskDic) {
-        //
-        if ([dicParam isEqualToDictionary:dicTask[@"param"]]) {
+    for (HTTPTaskItem *taskItem in _marrayTaskDic) {
+        if ([dicParam isEqualToDictionary:taskItem.param]) {
             HTTPLog(@"任务重复:%@", dicParam);
             return NO;
         }
     }
     
     HTTPLog(@"添加新任务，参数:%@", dicParam);
-    NSMutableDictionary *mdicTask = [NSMutableDictionary dictionary];
-    // 设置数据缓存
-    NSMutableData *mdataCache = [NSMutableData data];
-    [mdicTask setObject:mdataCache forKey:@"cache"];
+    HTTPTaskItem *taskItem = [[HTTPTaskItem alloc] init];
     // 参数
-    [mdicTask setObject:dicParam forKey:@"param"];
+    taskItem.param = dicParam;
     // 状态
-    [mdicTask setObject:TaskStatus_Wait forKey:@"status"];
+    taskItem.taskStatus = HTTPTaskStatus_Waiting;
     // 创建HTTP网络连接
-    if ([[UIDevice currentDevice].systemVersion floatValue] < 9.0) {
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 7.0) {
+        // 用NSURLConnection创建网络连接
         NSURLConnection *urlConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
-        [mdicTask setObject:urlConnection forKey:@"connect"];
+        taskItem.urlConnection = urlConnection;
 #if __has_feature(objc_arc)
 #else
         [urlConnection release];
 #endif
     }
     else {
-        NSURLSessionDataTask *dataTask = [[NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]] dataTaskWithRequest:request];
-        [mdicTask setValue:dataTask forKey:@"SessionTask"];
+        // 用NSURLSessionDataTask创建网络连接
+        taskItem.urlDataTask = [[NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]] dataTaskWithRequest:request];
     }
     // 将下载任务保存到数组
-    [_marrayTaskDic addObject:mdicTask];
+    [_marrayTaskDic addObject:taskItem];
+#if __has_feature(objc_arc)
+#else
+    [taskItem release];
+#endif
     
     [self startURLConnection];
     return YES;
@@ -174,25 +212,24 @@
     }
     // 遍历所有任务
     for (int i = 0; i < _marrayTaskDic.count; i++) {
+        HTTPTaskItem *taskItem = _marrayTaskDic[i];
         // 查看任务是否相同
-        NSDictionary *dicTask = _marrayTaskDic[i];
-        if ([dicParam isEqualToDictionary:dicTask[@"param"]]) {
+        if ([dicParam isEqualToDictionary:taskItem.param]) {
             // 取消网络请求
-            NSURLConnection *connect = dicTask[@"connect"];
-            if (connect) {
-                // 未启动的须先启动再取消，不然有内存泄露
-                if ([TaskStatus_Wait isEqualToString:dicTask[@"status"]]) {
-                    [connect start];
-                }
-                else {
-                    self.numberOfURLConnection -= 1;
-                }
-                [connect cancel];
+            if (taskItem.urlDataTask) {
+                // 直接取消即可
+                [taskItem.urlDataTask cancel];
+                self.numberOfRequesting -= 1;
             }
             else {
-                NSURLSessionDataTask *dataTask = dicTask[@"SessionTask"];
-                [dataTask cancel];
-                self.numberOfURLConnection -= 1;
+                // 未启动的须先启动再取消，不然有内存泄露
+                if (HTTPTaskStatus_Waiting == taskItem.taskStatus) {
+                    [taskItem.urlConnection start];
+                }
+                else {
+                    self.numberOfRequesting -= 1;
+                }
+                [taskItem.urlConnection cancel];
             }
             // 从任务队列中删除
             [_marrayTaskDic removeObjectAtIndex:i];
@@ -206,22 +243,22 @@
 - (void)clearRequest
 {
     // 遍历所有任务
-    for (NSDictionary *dicTask in _marrayTaskDic) {
-        NSURLConnection *connect = dicTask[@"connect"];
-        if (connect) {
-            // 未启动的须先启动再取消，不然有内存泄露
-            if ([TaskStatus_Wait isEqualToString:dicTask[@"status"]]) {
-                [connect start];
-            }
-            else {
-                self.numberOfURLConnection -= 1;
-            }
-            [connect cancel];
+    for (HTTPTaskItem *taskItem in _marrayTaskDic) {
+        // 取消网络请求
+        if (taskItem.urlDataTask) {
+            // 直接取消即可
+            [taskItem.urlDataTask cancel];
+            self.numberOfRequesting -= 1;
         }
         else {
-            NSURLSessionDataTask *dataTask = dicTask[@"SessionTask"];
-            [dataTask cancel];
-            self.numberOfURLConnection -= 1;
+            // 未启动的须先启动再取消，不然有内存泄露
+            if (HTTPTaskStatus_Waiting == taskItem.taskStatus) {
+                [taskItem.urlConnection start];
+            }
+            else {
+                self.numberOfRequesting -= 1;
+            }
+            [taskItem.urlConnection cancel];
         }
     }
     // 从任务队列中删除
@@ -235,28 +272,25 @@
 {
     HTTPLog(@"网络请求错误:%@", error);
     // 找到当前失败的任务
-    int indexTask = 0;
-    NSDictionary *dicTask = nil;
-    for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSDictionary *dic = _marrayTaskDic[i];
-        // 找到网络连接相应的数据字典
-        if (dic[@"connect"] == connection) {
-            indexTask = i;
-            dicTask = dic;
+    HTTPTaskItem *taskItem = nil;
+    for (HTTPTaskItem *item in _marrayTaskDic) {
+        // 根据网络连接查找
+        if (item.urlConnection == connection) {
+            taskItem = item;
             break;
         }
     }
     // 删除失败的任务
-    if (dicTask) {
+    if (taskItem) {
         // 删除
-        NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:dicTask];
-        self.numberOfURLConnection -= 1;
-        [_marrayTaskDic removeObjectAtIndex:indexTask];
+        NSDictionary *dicTempParam = [NSDictionary dictionaryWithDictionary:taskItem.param];
+        self.numberOfRequesting -= 1;
+        [_marrayTaskDic removeObjectIdenticalTo:taskItem];
         // 启动新任务
         [self startURLConnection];
         // 通知上层任务失败
         if ([self.delegate respondsToSelector:@selector(httpConnect:error:with:)]) {
-            [self.delegate httpConnect:self error:error with:dicTempTask[@"param"]];
+            [self.delegate httpConnect:self error:error with:dicTempParam];
         }
     }
 }
@@ -265,25 +299,21 @@
 {
     HTTPLog(@"网络请求收到响应");
     // 找到相应的任务
-    NSDictionary *dicTask = nil;
-    for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSDictionary *dic = _marrayTaskDic[i];
-        // 找到网络连接相应的数据字典
-        if (dic[@"connect"] == connection) {
-            dicTask = dic;
+    HTTPTaskItem *taskItem = nil;
+    for (HTTPTaskItem *item in _marrayTaskDic) {
+        // 根据网络连接查找
+        if (item.urlConnection == connection) {
+            taskItem = item;
             break;
         }
     }
     //
     if ([response isMemberOfClass:NSHTTPURLResponse.class]) {
         NSHTTPURLResponse *responseHTTP = (NSHTTPURLResponse *)response;
-        NSUInteger statusCode = responseHTTP.statusCode;
-        NSDictionary *dicAllHeaderFields = responseHTTP.allHeaderFields;
-        NSDictionary *dicParam = dicTask[@"param"];
         // 收到服务器返回的HTTP信息头
         if ([self.delegate respondsToSelector:@selector(httpConnect:receiveResponseWithStatusCode:andAllHeaderFields:with:)]) {
-            [self.delegate httpConnect:self receiveResponseWithStatusCode:statusCode 
-                    andAllHeaderFields:dicAllHeaderFields with:dicParam];
+            [self.delegate httpConnect:self receiveResponseWithStatusCode:responseHTTP.statusCode
+                    andAllHeaderFields:responseHTTP.allHeaderFields with:taskItem.param];
         }
     }
 }
@@ -292,25 +322,21 @@
 {
     HTTPLog(@"网络请求收到数据");
     // 找到相应的任务
-    NSDictionary *dicTask = nil;
-    for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSDictionary *dic = _marrayTaskDic[i];
-        // 找到网络连接相应的数据字典
-        if (dic[@"connect"] == connection) {
-            dicTask = dic;
+    HTTPTaskItem *taskItem = nil;
+    for (HTTPTaskItem *item in _marrayTaskDic) {
+        // 根据网络连接查找
+        if (item.urlConnection == connection) {
+            taskItem = item;
             break;
         }
     }
     //
-    if (dicTask) {
+    if (taskItem) {
         // 向缓存中添加数据
-        NSMutableData *mdataCache = dicTask[@"cache"];
-        [mdataCache appendData:data];
-        NSDictionary *dicParam = dicTask[@"param"];
-        HTTPLog(@"该数据的参数：%@", dicParam);
+        [taskItem.mdataCache appendData:data];
         // 收到部分数据
         if ([self.delegate respondsToSelector:@selector(httpConnect:receivePartData:with:)]) {
-            [self.delegate httpConnect:self receivePartData:data with:dicParam];
+            [self.delegate httpConnect:self receivePartData:data with:taskItem.param];
         }
     }
     HTTPLog(@"网络请求收到数据并处理完成");
@@ -320,30 +346,26 @@
 {
     HTTPLog(@"网络请求完成");
     // 找到当前完成的任务
-    int indexTask = 0;
-    NSDictionary *dicTask = nil;
-    for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSDictionary *dic = _marrayTaskDic[i];
-        // 找到网络连接相应的数据字典
-        if (dic[@"connect"] == connection) {
-            indexTask = i;
-            dicTask = dic;
+    HTTPTaskItem *taskItem = nil;
+    for (HTTPTaskItem *item in _marrayTaskDic) {
+        // 根据网络连接查找
+        if (item.urlConnection == connection) {
+            taskItem = item;
             break;
         }
     }
     // 删除已经完成的任务
-    if (dicTask) {
+    if (taskItem) {
         // 删除
-        NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:dicTask];
-        self.numberOfURLConnection -= 1;
-        [_marrayTaskDic removeObjectAtIndex:indexTask];
+        NSData *dataTempCache = [NSData dataWithData:taskItem.mdataCache];
+        NSDictionary *dicTempParam = [NSDictionary dictionaryWithDictionary:taskItem.param];
+        self.numberOfRequesting -= 1;
+        [_marrayTaskDic removeObjectIdenticalTo:taskItem];
         // 启动新任务
         [self startURLConnection];
         // 通知上层完成任务
         if ([self.delegate respondsToSelector:@selector(httpConnect:finish:with:)]) {
-            NSData *dataCache = dicTempTask[@"cache"];
-            NSDictionary *dicParam = dicTempTask[@"param"];
-            [self.delegate httpConnect:self finish:dataCache with:dicParam];
+            [self.delegate httpConnect:self finish:dataTempCache with:dicTempParam];
         }
     }
 }
@@ -361,30 +383,26 @@ didCompleteWithError:(NSError *)error
     if (nil == error) {
         HTTPLog(@"网络请求完成");
         // 找到当前完成的任务
-        int indexTask = 0;
-        NSDictionary *dicTask = nil;
-        for (int i = 0; i < _marrayTaskDic.count; i++) {
-            NSDictionary *dic = _marrayTaskDic[i];
-            // 找到网络连接相应的数据字典
-            if (dic[@"SessionTask"] == task) {
-                indexTask = i;
-                dicTask = dic;
+        HTTPTaskItem *taskItem = nil;
+        for (HTTPTaskItem *item in _marrayTaskDic) {
+            // 根据网络连接查找
+            if (item.urlDataTask == task) {
+                taskItem = item;
                 break;
             }
         }
         // 删除已经完成的任务
-        if (dicTask) {
+        if (taskItem) {
             // 删除
-            NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:dicTask];
-            self.numberOfURLConnection -= 1;
-            [_marrayTaskDic removeObjectAtIndex:indexTask];
+            NSData *dataTempCache = [NSData dataWithData:taskItem.mdataCache];
+            NSDictionary *dicTempParam = [NSDictionary dictionaryWithDictionary:taskItem.param];
+            self.numberOfRequesting -= 1;
+            [_marrayTaskDic removeObjectIdenticalTo:taskItem];
             // 启动新任务
             [self startURLConnection];
             // 通知上层完成任务
             if ([self.delegate respondsToSelector:@selector(httpConnect:finish:with:)]) {
-                NSData *dataCache = dicTempTask[@"cache"];
-                NSDictionary *dicParam = dicTempTask[@"param"];
-                [self.delegate httpConnect:self finish:dataCache with:dicParam];
+                [self.delegate httpConnect:self finish:dataTempCache with:dicTempParam];
             }
         }
         return;
@@ -395,28 +413,25 @@ didCompleteWithError:(NSError *)error
     }
     HTTPLog(@"网络请求错误:%@", error);
     // 找到当前失败的任务
-    int indexTask = 0;
-    NSDictionary *dicTask = nil;
-    for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSDictionary *dic = _marrayTaskDic[i];
-        // 找到网络连接相应的数据字典
-        if (dic[@"SessionTask"] == task) {
-            indexTask = i;
-            dicTask = dic;
+    HTTPTaskItem *taskItem = nil;
+    for (HTTPTaskItem *item in _marrayTaskDic) {
+        // 根据网络连接查找
+        if (item.urlDataTask == task) {
+            taskItem = item;
             break;
         }
     }
     // 删除失败的任务
-    if (dicTask) {
+    if (taskItem) {
         // 删除
-        NSDictionary *dicTempTask = [NSDictionary dictionaryWithDictionary:dicTask];
-        self.numberOfURLConnection -= 1;
-        [_marrayTaskDic removeObjectAtIndex:indexTask];
+        NSDictionary *dicTempParam = [NSDictionary dictionaryWithDictionary:taskItem.param];
+        self.numberOfRequesting -= 1;
+        [_marrayTaskDic removeObjectIdenticalTo:taskItem];
         // 启动新任务
         [self startURLConnection];
         // 通知上层任务失败
         if ([self.delegate respondsToSelector:@selector(httpConnect:error:with:)]) {
-            [self.delegate httpConnect:self error:error with:dicTempTask[@"param"]];
+            [self.delegate httpConnect:self error:error with:dicTempParam];
         }
     }
 }
@@ -430,25 +445,21 @@ didReceiveResponse:(NSURLResponse *)response
 {
     HTTPLog(@"网络请求收到响应");
     // 找到相应的任务
-    NSDictionary *dicTask = nil;
-    for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSDictionary *dic = _marrayTaskDic[i];
-        // 找到网络连接相应的数据字典
-        if (dic[@"SessionTask"] == dataTask) {
-            dicTask = dic;
+    HTTPTaskItem *taskItem = nil;
+    for (HTTPTaskItem *item in _marrayTaskDic) {
+        // 根据网络连接查找
+        if (item.urlDataTask == dataTask) {
+            taskItem = item;
             break;
         }
     }
     //
-    if ([response isMemberOfClass:NSHTTPURLResponse.class]) {
+    if (taskItem && [response isMemberOfClass:NSHTTPURLResponse.class]) {
         NSHTTPURLResponse *responseHTTP = (NSHTTPURLResponse *)response;
-        NSUInteger statusCode = responseHTTP.statusCode;
-        NSDictionary *dicAllHeaderFields = responseHTTP.allHeaderFields;
-        NSDictionary *dicParam = dicTask[@"param"];
         // 收到服务器返回的HTTP信息头
         if ([self.delegate respondsToSelector:@selector(httpConnect:receiveResponseWithStatusCode:andAllHeaderFields:with:)]) {
-            [self.delegate httpConnect:self receiveResponseWithStatusCode:statusCode
-                    andAllHeaderFields:dicAllHeaderFields with:dicParam];
+            [self.delegate httpConnect:self receiveResponseWithStatusCode:responseHTTP.statusCode
+                    andAllHeaderFields:responseHTTP.allHeaderFields with:taskItem.param];
         }
     }
     if (completionHandler) {
@@ -461,25 +472,21 @@ didReceiveResponse:(NSURLResponse *)response
 {
     HTTPLog(@"网络请求收到数据");
     // 找到相应的任务
-    NSDictionary *dicTask = nil;
-    for (int i = 0; i < _marrayTaskDic.count; i++) {
-        NSDictionary *dic = _marrayTaskDic[i];
-        // 找到网络连接相应的数据字典
-        if (dic[@"SessionTask"] == dataTask) {
-            dicTask = dic;
+    HTTPTaskItem *taskItem = nil;
+    for (HTTPTaskItem *item in _marrayTaskDic) {
+        // 根据网络连接查找
+        if (item.urlDataTask == dataTask) {
+            taskItem = item;
             break;
         }
     }
     //
-    if (dicTask) {
+    if (taskItem) {
         // 向缓存中添加数据
-        NSMutableData *mdataCache = dicTask[@"cache"];
-        [mdataCache appendData:data];
-        NSDictionary *dicParam = dicTask[@"param"];
-        HTTPLog(@"该数据的参数：%@", dicParam);
+        [taskItem.mdataCache appendData:data];
         // 收到部分数据
         if ([self.delegate respondsToSelector:@selector(httpConnect:receivePartData:with:)]) {
-            [self.delegate httpConnect:self receivePartData:data with:dicParam];
+            [self.delegate httpConnect:self receivePartData:data with:taskItem.param];
         }
     }
     HTTPLog(@"网络请求收到数据并处理完成");
@@ -490,30 +497,28 @@ didReceiveResponse:(NSURLResponse *)response
 
 - (void)startURLConnection
 {
-    if (self.numberOfURLConnection < self.maxNumberOfURLConnection) {
-        if (self.numberOfURLConnection < _marrayTaskDic.count) {
+    if (self.numberOfRequesting < self.maxNumberOfURLConnection) {
+        if (self.numberOfRequesting < _marrayTaskDic.count) {
             // 找到等待状态的任务
-            for (NSMutableDictionary *mdicTask in _marrayTaskDic) {
-                if ([TaskStatus_Wait isEqualToString:mdicTask[@"status"]]) {
+            for (HTTPTaskItem *taskItem in _marrayTaskDic) {
+                if (HTTPTaskStatus_Waiting == taskItem.taskStatus) {
                     // 修改状态
-                    [mdicTask setObject:TaskStatus_Run forKey:@"status"];
+                    taskItem.taskStatus = HTTPTaskStatus_Running;
                     // 启动
-                    NSURLConnection *urlConnection = mdicTask[@"connect"];
-                    if (urlConnection) {
-                        [urlConnection start];
+                    if (taskItem.urlDataTask) {
+                        [taskItem.urlDataTask resume];
                     }
                     else {
-                        NSURLSessionDataTask *dataTask = mdicTask[@"SessionTask"];
-                        [dataTask resume];
+                        [taskItem.urlConnection start];
                     }
                     break;
                 }
             }
-            self.numberOfURLConnection += 1;
+            self.numberOfRequesting += 1;
         }
     }
     HTTPLog(@"正在处理的网络请求数：%@，等待处理的网络请求：%@",
-            @(self.numberOfURLConnection), @(_marrayTaskDic.count-self.numberOfURLConnection));
+            @(self.numberOfRequesting), @(_marrayTaskDic.count-self.numberOfRequesting));
 }
 
 @end
