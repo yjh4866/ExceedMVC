@@ -27,7 +27,6 @@
         chatsItem.latestMsg = [NSString stringWithFormat:@"最新消息 %i", 10*i+rand()%13];
         chatsItem.avatarUrl = [arrAvatar objectAtIndex:rand()%arrAvatar.count];
         [marrChat addObject:chatsItem];
-        [chatsItem release];
     }
 }
 

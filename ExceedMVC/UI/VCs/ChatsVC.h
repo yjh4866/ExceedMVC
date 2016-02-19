@@ -13,8 +13,8 @@
 
 @interface ChatsVC : UIViewController
 
-@property (nonatomic, assign) id <ChatsVCDataSource> dataSource;
-@property (nonatomic, assign) id <ChatsVCDelegate> delegate;
+@property (nonatomic, weak) id <ChatsVCDataSource> dataSource;
+@property (nonatomic, weak) id <ChatsVCDelegate> delegate;
 
 @end
 

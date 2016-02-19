@@ -7,6 +7,7 @@
 //
 
 #import "FileManager.h"
+#import <UIKit/UIKit.h>
 
 @interface FileManager (Picture)
 

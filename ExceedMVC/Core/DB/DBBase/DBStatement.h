@@ -7,6 +7,7 @@
 //
 
 #import <sqlite3.h>
+#import <Foundation/Foundation.h>
 
 
 @interface DBStatement : NSObject {

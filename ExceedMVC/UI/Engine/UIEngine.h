@@ -10,7 +10,7 @@
 
 
 //Root
-#import "RootViewController.h"
+#import "RootVC.h"
 
 #import "MainVC.h"
 #import "ChatsVC.h"
@@ -29,7 +29,7 @@ ChatsVCDataSource, ChatsVCDelegate, ContactsVCDataSource, ContactsVCDelegate,
 MoreVCDataSource, MoreVCDelegate, ChatVCDataSource, ChatVCDelegate,
 ContactInfoVCDataSource, ContactInfoVCDelegate, LoginVCDelegate, AboutVCDelegate>
 
-@property (nonatomic, readonly) UIViewController *rootViewController;
-@property (nonatomic, retain) CoreEngine *engineCore;
+@property (nonatomic, readonly) RootVC *rootViewController;
+@property (nonatomic, strong) CoreEngine *engineCore;
 
 @end

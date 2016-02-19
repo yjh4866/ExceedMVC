@@ -15,15 +15,6 @@
 
 @implementation ChatVC
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -35,7 +26,6 @@
     
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"用户资料" style:UIBarButtonItemStylePlain target:self action:@selector(clickInfo:)];
     self.navigationItem.rightBarButtonItem = rightItem;
-    [rightItem release];
     
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter removeObserver:self];
@@ -56,8 +46,6 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [super dealloc];
 }
 
 

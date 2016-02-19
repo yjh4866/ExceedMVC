@@ -12,7 +12,7 @@
 
 @interface MainVC : UITabBarController
 
-@property (nonatomic, assign) id <MainVCDataSource> dataSource;
+@property (nonatomic, weak) id <MainVCDataSource> dataSource;
 
 @end
 

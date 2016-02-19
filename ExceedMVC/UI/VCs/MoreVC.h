@@ -13,8 +13,8 @@
 
 @interface MoreVC : UIViewController
 
-@property (nonatomic, assign) id <MoreVCDataSource> dataSource;
-@property (nonatomic, assign) id <MoreVCDelegate> delegate;
+@property (nonatomic, weak) id <MoreVCDataSource> dataSource;
+@property (nonatomic, weak) id <MoreVCDelegate> delegate;
 
 @end
 

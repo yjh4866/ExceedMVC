@@ -23,7 +23,7 @@
 }
 
 // 查看缓存占用空间（MB）
-+ (CGFloat)cacheUsed
++ (float)cacheUsed
 {
     NSUInteger capacity = 0;
     //图片缓存目录

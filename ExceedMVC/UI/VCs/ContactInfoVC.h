@@ -17,8 +17,8 @@
 
 @property (nonatomic, assign) UInt64 userID;
 
-@property (nonatomic, assign) id <ContactInfoVCDataSource> dataSource;
-@property (nonatomic, assign) id <ContactInfoVCDelegate> delegate;
+@property (nonatomic, weak) id <ContactInfoVCDataSource> dataSource;
+@property (nonatomic, weak) id <ContactInfoVCDelegate> delegate;
 
 @end
 

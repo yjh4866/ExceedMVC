@@ -10,12 +10,4 @@
 
 @implementation UserInfo
 
-- (void)dealloc
-{
-    [_userName release];
-    [_avatarUrl release];
-    
-    [super dealloc];
-}
-
 @end

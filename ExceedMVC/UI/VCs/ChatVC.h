@@ -15,8 +15,8 @@
 
 @property (nonatomic, assign) UInt64 friendID;
 
-@property (nonatomic, assign) id <ChatVCDataSource> dataSource;
-@property (nonatomic, assign) id <ChatVCDelegate> delegate;
+@property (nonatomic, weak) id <ChatVCDataSource> dataSource;
+@property (nonatomic, weak) id <ChatVCDelegate> delegate;
 
 @end
 

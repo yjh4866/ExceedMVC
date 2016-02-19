@@ -10,13 +10,4 @@
 
 @implementation ChatsItem
 
-- (void)dealloc
-{
-    [_userName release];
-    [_latestMsg release];
-    [_avatarUrl release];
-    
-    [super dealloc];
-}
-
 @end

@@ -10,13 +10,13 @@
 #import "ChatsItem.h"
 #import "CoreEngine.h"
 
+#import "UIImageView+NBL.h"
+
 @interface ChatsVC () <UITableViewDataSource, UITableViewDelegate> {
-    
-    UITableView *_tableView;
     
     NSMutableArray *_marrChat;
 }
-
+@property (nonatomic, strong) UITableView *tableView;
 @end
 
 @implementation ChatsVC
@@ -41,12 +41,14 @@
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
     
-    if (nil == _tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-        _tableView.dataSource = self;
-        _tableView.delegate = self;
+    if (nil == self.tableView) {
+        self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+        self.tableView.dataSource = self;
+        self.tableView.delegate = self;
+        
+        [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"ChatsCell"];
     }
-    [self.view addSubview:_tableView];
+    [self.view addSubview:self.tableView];
     
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter removeObserver:self];
@@ -69,19 +71,13 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    //
-    [_tableView release];
-    //
-    [_marrChat release];
-    
-    [super dealloc];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    _tableView.frame = self.view.bounds;
+    self.tableView.frame = self.view.bounds;
 }
 
 
@@ -97,7 +93,7 @@
         if (chatsItem.userID == userID) {
             chatsItem.userName = userName;
             chatsItem.avatarUrl = avatarUrl;
-            [_tableView reloadData];
+            [self.tableView reloadData];
             break;
         }
     }
@@ -113,11 +109,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *CellId = @"ChatsCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellId];
-    if (nil == cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellId] autorelease];
-    }
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ChatsCell"];
     //
     ChatsItem *chatsItem = [_marrChat objectAtIndex:indexPath.row];
     cell.textLabel.text = chatsItem.userName;

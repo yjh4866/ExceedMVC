@@ -12,7 +12,7 @@
 
 @interface AboutVC : UIViewController
 
-@property (nonatomic, assign) id <AboutVCDelegate> delegate;
+@property (nonatomic, weak) id <AboutVCDelegate> delegate;
 
 @end
 

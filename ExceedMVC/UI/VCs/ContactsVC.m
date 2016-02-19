@@ -10,13 +10,13 @@
 #import "CoreEngine.h"
 #import "UserInfo.h"
 
+#import "UIImageView+NBL.h"
+
 @interface ContactsVC () <UITableViewDataSource, UITableViewDelegate> {
-    
-    UITableView *_tableView;
     
     NSMutableArray *_marrFriend;
 }
-
+@property (nonatomic, strong) UITableView *tableView;
 @end
 
 @implementation ContactsVC
@@ -41,13 +41,15 @@
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
     
-    if (nil == _tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds
+    if (nil == self.tableView) {
+        self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds
                                                   style:UITableViewStylePlain];
-        _tableView.dataSource = self;
-        _tableView.delegate = self;
+        self.tableView.dataSource = self;
+        self.tableView.delegate = self;
+        
+        [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"FriendCell"];
     }
-    [self.view addSubview:_tableView];
+    [self.view addSubview:self.tableView];
     
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter removeObserver:self];
@@ -68,13 +70,11 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [super dealloc];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    _tableView.frame = self.view.bounds;
+    self.tableView.frame = self.view.bounds;
 }
 
 
@@ -90,7 +90,7 @@
         if (friendInfo.userID == userID) {
             friendInfo.userName = userName;
             friendInfo.avatarUrl = avatarUrl;
-            [_tableView reloadData];
+            [self.tableView reloadData];
             break;
         }
     }
@@ -106,11 +106,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *CellId = @"FriendCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellId];
-    if (nil == cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellId] autorelease];
-    }
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FriendCell"];
     //
     UserInfo *friendInfo = [_marrFriend objectAtIndex:indexPath.row];
     cell.textLabel.text = friendInfo.userName;
@@ -118,7 +114,7 @@
     [cell.imageView loadImageFromCachePath:nil orPicUrl:friendInfo.avatarUrl withDownloadResult:^(UIImageView *imageView, NSString *picUrl, float progress, BOOL finished, NSError *error) {
         // error为nil表示下载成功
         if (nil == error) {
-            [_tableView reloadData];
+            [self.tableView reloadData];
         }
     }];
     

@@ -18,23 +18,21 @@
 }
 
 // 登录返回数据
-- (void)netController:(NetController *)netController loginResult:(NSString *)strWebData
+- (void)netController:(NetController *)netController loginResult:(NSDictionary *)userInfo
 {
     //假设成功 
-    [[NSNotificationCenter defaultCenter] postNotificationName:NetLoginSuccess
-                                                        object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:NetLoginSuccess object:nil userInfo:@{@"userInfo": userInfo}];
 }
 
 // 网络原因用户资料获取失败
 - (void)netController:(NetController *)netController userInfoError:(NSError *)error of:(UInt64)userID
 {
-    NSDictionary *dicUserInfo = @{@"userid": [NSNumber numberWithLongLong:userID],
-                                  @"error": error};
+    NSDictionary *dicUserInfo = @{@"userid": @(userID), @"error": error};
     [[NSNotificationCenter defaultCenter] postNotificationName:NetUserInfoFailure object:nil userInfo:dicUserInfo];
 }
 
 // 获取用户资料返回数据
-- (void)netController:(NetController *)netController userInfoResult:(NSString *)strWebData of:(UInt64)userID
+- (void)netController:(NetController *)netController userInfo:(NSDictionary *)userInfo of:(UInt64)userID
 {
     //数据错误的话也是失败噢，这里以正确处理
     
@@ -42,25 +40,10 @@
     //需要先将数据保存到数据库噢
     //消息中心多发
     NSString *newUserName = [NSString stringWithFormat:@"好友%lld新名字", userID];
-    NSDictionary *dicUserInfo = @{@"userid": [NSNumber numberWithLongLong:userID],
+    NSDictionary *dicUserInfo = @{@"userid": @(userID),
                                   @"username": newUserName,
                                   @"avatar": @"http://avatar.csdn.net/0/E/4/1_yorhomwang.jpg"};
     [[NSNotificationCenter defaultCenter] postNotificationName:NetUserInfoSuccess object:nil userInfo:dicUserInfo];
-}
-
-// 网络原因下载失败
-- (void)netController:(NetController *)netController downloadFileError:(NSError *)error with:(NSString *)filePath andUrl:(NSString *)url
-{
-    NSDictionary *dicUserInfo = @{@"url": url,
-                                  @"error": error};
-    [[NSNotificationCenter defaultCenter] postNotificationName:NetDownloadFileFailure object:nil userInfo:dicUserInfo];
-}
-
-// 下载成功
-- (void)netController:(NetController *)netController downloadFileSuccessWith:(NSString *)filePath andUrl:(NSString *)url
-{
-    NSDictionary *dicUserInfo = @{@"url": url};
-    [[NSNotificationCenter defaultCenter] postNotificationName:NetDownloadFileSuccess object:nil userInfo:dicUserInfo];
 }
 
 @end

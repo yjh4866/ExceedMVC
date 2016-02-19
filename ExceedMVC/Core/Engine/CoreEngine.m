@@ -9,7 +9,6 @@
 #import "CoreEngine.h"
 #import "DBConnection.h"
 #import "DBController+Update.h"
-#import "CoreEngine+Update.h"
 #import "AppSetting+Server.h"
 
 @implementation CoreEngine
@@ -26,8 +25,7 @@
         [self update];
         
         //网络
-        _netController = [[NetController alloc] init];
-        _netController.delegate = self;
+        [NetController sharedInstance].delegate = self;
         
         //这里设置成NO，即可测试需要登录的情况
         self.online = YES;
@@ -37,10 +35,6 @@
 
 - (void)dealloc
 {
-    //
-    [_netController release];
-    
-    [super dealloc];
 }
 
 
@@ -64,6 +58,14 @@
     
 }
 
+
+#pragma mark - Private
+
+- (void)update
+{
+    
+}
+
 @end
 
 
@@ -73,7 +75,4 @@ NSString *const NetLoginFailure              = @"NetLoginFailure";
 NSString *const NetLoginSuccess              = @"NetLoginSuccess";
 NSString *const NetUserInfoFailure           = @"NetUserInfoFailure";
 NSString *const NetUserInfoSuccess           = @"NetUserInfoSuccess";
-
-NSString *const NetDownloadFileFailure       = @"NetDownloadFileFailure";
-NSString *const NetDownloadFileSuccess       = @"NetDownloadFileSuccess";
 

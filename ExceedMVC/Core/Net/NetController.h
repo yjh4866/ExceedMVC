@@ -12,14 +12,13 @@
 
 @interface NetController : NSObject
 
-@property (nonatomic, assign) id <NetControllerDelegate> delegate;
+@property (nonatomic, weak) id <NetControllerDelegate> delegate;
+
++ (instancetype)sharedInstance;
 
 // 登录
 - (void)loginWithUserName:(NSString *)userName
               andPassword:(NSString *)password;
-
-// 下载指定url的文件
-- (void)downloadFile:(NSString *)filePath withUrl:(NSString *)url;
 
 // 获取指定用户资料
 - (void)getUserInfoOf:(UInt64)userID;
@@ -36,19 +35,13 @@
 - (void)netController:(NetController *)netController loginError:(NSError *)error;
 
 // 登录返回数据
-- (void)netController:(NetController *)netController loginResult:(NSString *)strWebData;
+- (void)netController:(NetController *)netController loginResult:(NSDictionary *)userInfo;
 
 // 网络原因用户资料获取失败
 - (void)netController:(NetController *)netController userInfoError:(NSError *)error of:(UInt64)userID;
 
 // 获取用户资料返回数据
-- (void)netController:(NetController *)netController userInfoResult:(NSString *)strWebData of:(UInt64)userID;
-
-// 网络原因下载失败
-- (void)netController:(NetController *)netController downloadFileError:(NSError *)error with:(NSString *)filePath andUrl:(NSString *)url;
-
-// 下载成功
-- (void)netController:(NetController *)netController downloadFileSuccessWith:(NSString *)filePath andUrl:(NSString *)url;
+- (void)netController:(NetController *)netController userInfo:(NSDictionary *)userInfo of:(UInt64)userID;
 
 @end
 

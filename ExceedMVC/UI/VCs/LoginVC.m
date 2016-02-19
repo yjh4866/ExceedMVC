@@ -83,7 +83,7 @@
              loginWithUserName:@"userName" andPasswrod:@"password"];
     }
     else {
-        UILOG(@"未实现LoginVC的登录协议");
+        NSLog(@"未实现LoginVC的登录协议");
     }
 }
 

@@ -26,7 +26,6 @@
 		//
 		strDBVersion = [NSString stringWithFormat:@"%i.%i.%i.%i", v0, v1, v2, v3];
 	}
-	[stmt release];
 	return strDBVersion;
 }
 
@@ -47,7 +46,6 @@
 		[dicDBVersion setObject:[NSNumber numberWithInt:v2] forKey:@"version2"];
 		[dicDBVersion setObject:[NSNumber numberWithInt:v3] forKey:@"version3"];
 	}
-	[stmt release];
 }
 
 //修改数据库版本
@@ -70,7 +68,6 @@
 	//
 	if ([stmt step] == SQLITE_DONE) {
 	}
-	[stmt release];
 }
 
 //修改数据库版本
@@ -92,7 +89,6 @@
 	//
 	if ([stmt step] == SQLITE_DONE) {
 	}
-	[stmt release];
 }
 
 @end

@@ -10,13 +10,11 @@
 #import "CoreEngine.h"
 #import "UserInfo.h"
 
-@interface ContactInfoVC () {
-    
-    UIImageView *_imageViewAvatar;
-    
-    UserInfo *_userInfo;
-}
+#import "UIImageView+NBL.h"
 
+@interface ContactInfoVC ()
+@property (nonatomic, strong) UIImageView *imageViewAvatar;
+@property (nonatomic, strong) UserInfo *userInfo;
 @end
 
 @implementation ContactInfoVC
@@ -27,7 +25,7 @@
     if (self) {
         // Custom initialization
         self.title = @"详细资料";
-        _userInfo = [[UserInfo alloc] init];
+        self.userInfo = [[UserInfo alloc] init];
     }
     return self;
 }
@@ -43,13 +41,12 @@
     
     UIBarButtonItem *updateItem = [[UIBarButtonItem alloc] initWithTitle:@"更新" style:UIBarButtonItemStylePlain target:self action:@selector(clickUpdate:)];
     self.navigationItem.rightBarButtonItem = updateItem;
-    [updateItem release];
     
-    if (nil == _imageViewAvatar) {
-        _imageViewAvatar = [[UIImageView alloc] initWithFrame:CGRectMake(40.0f, 40.0f, 100.0f, 100.0f)];
-        _imageViewAvatar.backgroundColor = [UIColor lightGrayColor];
+    if (nil == self.imageViewAvatar) {
+        self.imageViewAvatar = [[UIImageView alloc] initWithFrame:CGRectMake(40.0f, 40.0f, 100.0f, 100.0f)];
+        self.imageViewAvatar.backgroundColor = [UIColor lightGrayColor];
     }
-    [self.view addSubview:_imageViewAvatar];
+    [self.view addSubview:self.imageViewAvatar];
     
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter removeObserver:self];
@@ -57,8 +54,8 @@
                           name:NetUserInfoSuccess object:nil];
     
     if ([self.dataSource respondsToSelector:@selector(contactInfoVC:loadUserInfo:)]) {
-        [self.dataSource contactInfoVC:self loadUserInfo:_userInfo];
-        self.title = _userInfo.userName;
+        [self.dataSource contactInfoVC:self loadUserInfo:self.userInfo];
+        self.title = self.userInfo.userName;
     }
 }
 
@@ -71,12 +68,6 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    //
-    [_imageViewAvatar release];
-    //
-    [_userInfo release];
-    
-    [super dealloc];
 }
 
 
@@ -90,8 +81,8 @@
     if (self.userID == userID) {
         self.title = userName;
         // 显示头像
-        _userInfo.avatarUrl = [notif.userInfo objectForKey:@"avatar"];
-        [_imageViewAvatar loadImageFromCachePath:nil orPicUrl:_userInfo.avatarUrl];
+        self.userInfo.avatarUrl = [notif.userInfo objectForKey:@"avatar"];
+        [self.imageViewAvatar loadImageFromCachePath:nil orPicUrl:self.userInfo.avatarUrl];
     }
 }
 

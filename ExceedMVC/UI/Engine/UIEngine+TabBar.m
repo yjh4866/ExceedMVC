@@ -7,10 +7,8 @@
 //
 
 #import "UIEngine+TabBar.h"
-#import "CoreEngine+DB.h"
-#import "CoreEngine+Send.h"
-#import "FileManager.h"
-#import "FileManager+Picture.h"
+#import "DBController+Message.h"
+#import "DBController+UserInfo.h"
 
 @implementation UIEngine (TabBar)
 
@@ -25,34 +23,22 @@
     chatsVC.dataSource = self;
     chatsVC.delegate = self;
     UINavigationController *navChats = [[UINavigationController alloc] initWithRootViewController:chatsVC];
-    UITabBarItem *tabItemChats = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemBookmarks tag:0];
-    navChats.tabBarItem = tabItemChats;
-    [tabItemChats release];
+    navChats.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemBookmarks tag:0];
     [marray addObject:navChats];
-    [navChats release];
-    [chatsVC release];
     //联系人
     ContactsVC *contactsVC = [[ContactsVC alloc] init];
     contactsVC.dataSource = self;
     contactsVC.delegate = self;
     UINavigationController *navContacts = [[UINavigationController alloc] initWithRootViewController:contactsVC];
-    UITabBarItem *tabItemContacts = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemContacts tag:1];
-    navContacts.tabBarItem = tabItemContacts;
-    [tabItemContacts release];
+    navContacts.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemContacts tag:1];
     [marray addObject:navContacts];
-    [navContacts release];
-    [contactsVC release];
     //更多
     MoreVC *moreVC = [[MoreVC alloc] init];
     moreVC.dataSource = self;
     moreVC.delegate = self;
     UINavigationController *navMore = [[UINavigationController alloc] initWithRootViewController:moreVC];
-    UITabBarItem *tabItemMore = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemMore tag:2];
-    navMore.tabBarItem = tabItemMore;
-    [tabItemMore release];
+    navMore.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemMore tag:2];
     [marray addObject:navMore];
-    [navMore release];
-    [moreVC release];
 }
 
 
@@ -61,7 +47,7 @@
 // 加载会话列表
 - (void)chatsVC:(ChatsVC *)chatsVC loadChats:(NSMutableArray *)marrChat
 {
-    [self.engineCore loadChats:marrChat];
+    [DBController loadChats:marrChat];
 }
 
 
@@ -75,7 +61,6 @@
     chatVC.dataSource = self;
     chatVC.delegate = self;
     [chatsVC.navigationController pushViewController:chatVC animated:YES];
-    [chatVC release];
 }
 
 
@@ -84,7 +69,7 @@
 // 加载已有联系人
 - (void)contactsVC:(ContactsVC *)contactsVC loadContacts:(NSMutableArray *)marray
 {
-    [self.engineCore loadContacts:marray];
+    [DBController loadContacts:marray];
 }
 
 
@@ -99,7 +84,6 @@
     contactInfoVC.delegate = self;
     [contactsVC.navigationController pushViewController:contactInfoVC
                                                animated:YES];
-    [contactInfoVC release];
 }
 
 
@@ -111,7 +95,6 @@
     AboutVC *aboutVC = [[AboutVC alloc] init];
     aboutVC.delegate = self;
     [moreVC.navigationController pushViewController:aboutVC animated:YES];
-    [aboutVC release];
 }
 
 @end

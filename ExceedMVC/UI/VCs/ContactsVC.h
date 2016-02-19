@@ -13,8 +13,8 @@
 
 @interface ContactsVC : UIViewController
 
-@property (nonatomic, assign) id <ContactsVCDataSource> dataSource;
-@property (nonatomic, assign) id <ContactsVCDelegate> delegate;
+@property (nonatomic, weak) id <ContactsVCDataSource> dataSource;
+@property (nonatomic, weak) id <ContactsVCDelegate> delegate;
 
 @end
 

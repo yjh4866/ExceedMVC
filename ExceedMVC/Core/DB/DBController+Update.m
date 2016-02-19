@@ -14,10 +14,9 @@
 // 升级
 + (void)update
 {
-    NSMutableDictionary *mdicDBVersion = [[NSMutableDictionary alloc] initWithCapacity:4];
+    NSMutableDictionary *mdicDBVersion = [NSMutableDictionary dictionary];
     //获取数据库版本
     [DBController loadDBVersion:mdicDBVersion];
-    [mdicDBVersion release];
 }
 
 @end

@@ -10,11 +10,7 @@
 #import "NetController.h"
 
 
-@interface CoreEngine : NSObject <NetControllerDelegate> {
-@private
-    //
-    NetController *_netController;
-}
+@interface CoreEngine : NSObject <NetControllerDelegate>
 
 @property (nonatomic, assign) BOOL online;
 
@@ -31,9 +27,6 @@ extern NSString *const NetLoginFailure;
 extern NSString *const NetLoginSuccess;
 extern NSString *const NetUserInfoFailure;
 extern NSString *const NetUserInfoSuccess;
-
-extern NSString *const NetDownloadFileFailure;
-extern NSString *const NetDownloadFileSuccess;
 
 
 #ifdef DEBUG

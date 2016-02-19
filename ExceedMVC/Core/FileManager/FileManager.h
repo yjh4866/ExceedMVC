@@ -14,7 +14,7 @@
 + (NSString *)cachePathForFile;
 
 // 查看缓存占用空间（MB）
-+ (CGFloat)cacheUsed;
++ (float)cacheUsed;
 
 // 清理缓存
 + (void)clearAllCache;

@@ -12,7 +12,7 @@
 
 @interface LoginVC : UIViewController
 
-@property (nonatomic, assign) id <LoginVCDelegate> delegate;
+@property (nonatomic, weak) id <LoginVCDelegate> delegate;
 
 @end
 

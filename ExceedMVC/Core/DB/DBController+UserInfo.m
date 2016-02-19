@@ -28,7 +28,6 @@
         friendInfo.userName = [NSString stringWithFormat:@"好友%i", 10+i];
         friendInfo.avatarUrl = [arrAvatar objectAtIndex:i%arrAvatar.count];
         [marrContact addObject:friendInfo];
-        [friendInfo release];
     }
 }
 

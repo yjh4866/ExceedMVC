@@ -7,16 +7,17 @@
 //
 
 #import "UIEngine.h"
-#import "UIDevice+Custom.h"
-#import "PictureEditor.h"
-#import "CoreEngine+DB.h"
-#import "CoreEngine+Send.h"
+
+#import "DBController+UserInfo.h"
+
+#import "CoreEngine.h"
+#import "NetController.h"
 
 @interface UIEngine () {
     
-    RootViewController *_rootViewController;
+    RootVC *_rootViewController;
 }
-
+@property (nonatomic, strong) RootVC *rootViewController;
 @end
 
 @implementation UIEngine
@@ -29,20 +30,14 @@
     if (self) {
         // Custom initialization
         //
-        _rootViewController = [[RootViewController alloc] init];
-        _rootViewController.delegate = self;
-        UILOG(@"创建UIEngine");
+        self.rootViewController = [[RootVC alloc] init];
+        self.rootViewController.delegate = self;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [_rootViewController release];
-    //
-    self.engineCore = nil;
-    
-    [super dealloc];
 }
 
 
@@ -52,22 +47,19 @@
 #pragma mark - RootVCDelegate
 
 // 是否为第一次显示
-- (void)rootVC:(RootViewController *)rootVC didFirstAppear:(BOOL)firstAppear
+- (void)rootVC:(RootVC *)rootVC didFirstAppear:(BOOL)firstAppear
 {
     if (firstAppear) {
         if (self.engineCore.online) {
             MainVC *mainVC = [[MainVC alloc] init];
             mainVC.dataSource = self;
             [_rootViewController presentViewController:mainVC animated:NO completion:nil];
-            [mainVC release];
         }
         else {
             LoginVC *loginVC = [[LoginVC alloc] init];
             loginVC.delegate = self;
             UINavigationController *navLogin = [[UINavigationController alloc] initWithRootViewController:loginVC];
             [_rootViewController presentViewController:navLogin animated:NO completion:nil];
-            [navLogin release];
-            [loginVC release];
         }
     }
 }
@@ -78,7 +70,7 @@
 // 查询姓名
 - (NSString *)chatVC:(ChatVC *)chatVC getUserNameOf:(UInt64)userID
 {
-    return [self.engineCore getUserNameOf:userID];
+    return [DBController getUserNameOf:userID];
 }
 
 
@@ -92,7 +84,6 @@
     contactInfoVC.dataSource = self;
     contactInfoVC.delegate = self;
     [chatVC.navigationController pushViewController:contactInfoVC animated:YES];
-    [contactInfoVC release];
 }
 
 
@@ -111,7 +102,7 @@
 // 更新用户资料
 - (void)contactInfoVCGetUserInfo:(ContactInfoVC *)contactInfoVC
 {
-    [self.engineCore getUserInfoOf:contactInfoVC.userID];
+    [[NetController sharedInstance] getUserInfoOf:contactInfoVC.userID];
 }
 
 
@@ -120,22 +111,19 @@
 - (void)loginVC:(LoginVC *)loginVC loginWithUserName:(NSString *)userName
     andPasswrod:(NSString *)password
 {
-    [self.engineCore loginWithUserName:userName andPassword:password];
+    [[NetController sharedInstance] loginWithUserName:userName andPassword:password];
 }
 
 - (void)loginVCLoginSuccess:(LoginVC *)loginVC
 {
-    UIViewController *navLogin = [loginVC.navigationController retain];
-    [_rootViewController dismissViewControllerAnimated:NO completion:nil];
+    [self.rootViewController dismissViewControllerAnimated:NO completion:nil];
     //
     MainVC *mainVC = [[MainVC alloc] init];
     mainVC.dataSource = self;
-    [_rootViewController presentViewController:mainVC animated:NO completion:nil];
-    [mainVC presentViewController:navLogin animated:NO completion:nil];
-    [mainVC release];
+    [self.rootViewController presentViewController:mainVC animated:NO completion:nil];
+    [mainVC presentViewController:loginVC.navigationController animated:NO completion:nil];
     
-    [navLogin dismissViewControllerAnimated:YES completion:nil];
-    [navLogin release];
+    [mainVC dismissViewControllerAnimated:YES completion:nil];
 }
 
 

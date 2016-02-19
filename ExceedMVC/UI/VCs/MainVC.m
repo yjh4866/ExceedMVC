@@ -52,7 +52,6 @@
             NSMutableArray *marrVC = [[NSMutableArray alloc] init];
             [self.dataSource mainVC:self loadViewControllers:marrVC];
             self.viewControllers = marrVC;
-            [marrVC release];
         }
         
         self.firstLoadVCs = NO;

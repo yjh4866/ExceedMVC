@@ -35,7 +35,6 @@
     
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStylePlain target:self action:@selector(clickClose:)];
     self.navigationItem.leftBarButtonItem = leftItem;
-    [leftItem release];
 }
 
 - (void)didReceiveMemoryWarning
